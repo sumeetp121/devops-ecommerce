@@ -24,3 +24,31 @@ def test_product_not_found():
     response = client.get("/products/999")
 
     assert response.status_code == 404
+
+def test_create_product():
+    new_product = {
+        "id": 5,
+        "name": "Monitor",
+        "description": "24-inch monitor",
+        "price": 12000,
+        "category": "Electronics",
+    }
+
+    response = client.post("/products", json=new_product)
+
+    assert response.status_code == 200
+    assert response.json()["name"] == "Monitor"
+    assert response.json()["price"] == 12000
+
+def test_create_product_validation():
+    invalid_product = {
+        "id": "abc",
+        "name": "Test",
+        "description": "Test product",
+        "price": "hello",
+        "category": "Test",
+    }
+
+    response = client.post("/products", json=invalid_product)
+
+    assert response.status_code == 422
