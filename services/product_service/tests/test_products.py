@@ -52,3 +52,25 @@ def test_create_product_validation():
     response = client.post("/products", json=invalid_product)
 
     assert response.status_code == 422
+
+def test_update_product():
+    updated_product = {
+        "id": 1,
+        "name": "Gaming Laptop",
+        "description": "High-performance gaming laptop",
+        "price": 95000,
+        "category": "Electronics",
+    }
+
+    response = client.put("/products/1", json=updated_product)
+
+    assert response.status_code == 200
+    assert response.json()["name"] == "Gaming Laptop"
+    assert response.json()["price"] == 95000
+
+
+def test_delete_product():
+    response = client.delete("/products/3")
+
+    assert response.status_code == 200
+    assert response.json()["name"] == "Keyboard"

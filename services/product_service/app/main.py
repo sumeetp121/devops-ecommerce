@@ -60,3 +60,22 @@ def get_product(product_id: int):
             return product
 
     raise HTTPException(status_code=404, detail="Product not found")
+
+@app.put("/products/{product_id}")
+def update_product(product_id: int, product: Product):
+    for index, existing_product in enumerate(products):
+        if existing_product["id"] == product_id:
+            products[index] = product.model_dump()
+            return products[index]
+
+    raise HTTPException(status_code=404, detail="Product not found")
+
+
+@app.delete("/products/{product_id}")
+def delete_product(product_id: int):
+    for index, product in enumerate(products):
+        if product["id"] == product_id:
+            deleted_product = products.pop(index)
+            return deleted_product
+
+    raise HTTPException(status_code=404, detail="Product not found")
