@@ -1,7 +1,13 @@
 from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
 app = FastAPI(title="Product Catalog Service")
-
+class Product(BaseModel):
+    id: int
+    name: str
+    description: str
+    price: float
+    category: str
 
 products = [
     {
@@ -41,6 +47,11 @@ def health():
 @app.get("/products")
 def get_products():
     return products
+
+@app.post("/products")
+def create_product(product: Product):
+    products.append(product.model_dump())
+    return product
 
 @app.get("/products/{product_id}")
 def get_product(product_id: int):
