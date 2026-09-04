@@ -384,6 +384,22 @@ API endpoints with response schemas:
 
 This establishes a cleaner API contract between the Product Catalog service and its consumers.
 
+### Milestone 9 — Database Test Isolation
+
+Improved the Product Catalog automated testing setup by separating test data from the development database.
+
+Changes:
+- Created a dedicated `ecommerce_test_db` PostgreSQL database.
+- Added `pytest` database configuration through `conftest.py`.
+- Automated tests now use the dedicated test database.
+- Test tables are created automatically when the test suite starts.
+- Test data is cleaned after each test.
+- Test database tables are removed after the test session.
+- Development database remains protected from automated test data.
+- Full automated test suite passes: **7 passed**.
+
+This provides a safer and cleaner foundation for automated testing before containerization and CI/CD.
+
 ---
 
 # Current Status
@@ -413,10 +429,11 @@ The project has successfully progressed from a basic FastAPI service to a servic
 * [x] Add database CRUD operations
 * [x] Update automated tests for PostgreSQL-backed API
 * [x] Improve API response/schema handling
+* [x] Add database test isolation/fixtures
 
 ### In Progress
 
-- [ ] Add database test isolation/fixtures
+
 - [ ] Containerize the Product Catalog service
 
 ---
