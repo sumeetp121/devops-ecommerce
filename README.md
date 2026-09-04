@@ -363,6 +363,27 @@ PostgreSQL
 products table
 ```
 
+### Milestone 8 — Proper API Response Schemas
+
+Improved the Product Catalog API by adding explicit FastAPI response schemas.
+
+Changes:
+- Added `ProductResponse` Pydantic schema.
+- Added `response_model` to all Product API endpoints.
+- Ensured API responses expose only the expected product fields.
+- Added response validation through FastAPI/Pydantic.
+- Verified all CRUD endpoints continue to work.
+- Full automated test suite passes: **7 passed**.
+
+API endpoints with response schemas:
+- `GET /products`
+- `POST /products`
+- `GET /products/{product_id}`
+- `PUT /products/{product_id}`
+- `DELETE /products/{product_id}`
+
+This establishes a cleaner API contract between the Product Catalog service and its consumers.
+
 ---
 
 # Current Status
@@ -391,10 +412,10 @@ The project has successfully progressed from a basic FastAPI service to a servic
 * [x] Separate API schemas from database models
 * [x] Add database CRUD operations
 * [x] Update automated tests for PostgreSQL-backed API
+* [x] Improve API response/schema handling
 
 ### In Progress
 
-- [ ] Improve API response/schema handling
 - [ ] Add database test isolation/fixtures
 - [ ] Containerize the Product Catalog service
 
