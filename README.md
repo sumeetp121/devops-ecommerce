@@ -400,6 +400,92 @@ Changes:
 
 This provides a safer and cleaner foundation for automated testing before containerization and CI/CD.
 
+
+---
+
+## Milestone 10 — E-Commerce Website & Admin Dashboard
+
+Built the first complete local e-commerce application by connecting the frontend, Product Catalog API, and PostgreSQL database.
+
+### Storefront
+
+Implemented a modern dark-mode e-commerce storefront with:
+
+- Product listing
+- Product categories
+- Product search
+- Product filtering
+- Product cards
+- Shopping cart
+- Cart quantity management
+- Cart persistence using browser local storage
+- Responsive design
+- Hover effects and modern UI interactions
+- Product data loaded dynamically from the Product Catalog API
+
+### Admin Dashboard
+
+Implemented a product management dashboard with:
+
+- Product listing
+- Product count
+- Add product
+- Edit product
+- Delete product
+- Product category management
+- Product price management
+- Product description management
+- Refresh catalog
+- Success/error notifications
+- Responsive admin interface
+
+### Application Flow
+
+```text
+Browser
+   |
+   v
+Node.js Frontend
+   |
+   v
+Product Catalog API
+   |
+   v
+FastAPI
+   |
+   v
+PostgreSQL
+```
+
+## The Node.js frontend provides API proxy endpoints for the Product Catalog service.
+
+## Supported operations:
+
+- GET     /api/products
+- GET     /api/products/:id
+- POST    /api/products
+- PUT     /api/products/:id
+- DELETE  /api/products/:id
+---
+
+# Current Local Application
+
+## Storefront:
+
+http://localhost:3000
+
+## Admin Dashboard:
+
+http://localhost:3000/admin.html
+
+## Product Catalog API:
+
+http://localhost:8000
+
+## Swagger API Documentation:
+
+http://localhost:8000/docs
+
 ---
 
 # Current Status
