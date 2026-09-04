@@ -41,11 +41,11 @@ def health():
     return {"status": "healthy"}
 
 
-@app.get("/products")
+@app.get("/products", response_model=list[ProductResponse])
 def get_products(db: Session = Depends(get_db)):
     return db.query(ProductModel).all()
 
-@app.post("/products")
+@app.post("/products", response_model=ProductResponse)
 def create_product(product: ProductCreate, db: Session = Depends(get_db)):
     db_product = ProductModel(
         name=product.name,
@@ -60,7 +60,7 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db)):
 
     return db_product
 
-@app.get("/products/{product_id}")
+@app.get("/products/{product_id}", response_model=ProductResponse)
 def get_product(product_id: int, db: Session = Depends(get_db)):
     product = db.query(ProductModel).filter(ProductModel.id == product_id).first()
 
@@ -69,7 +69,7 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
 
     return product
 
-@app.put("/products/{product_id}")
+@app.put("/products/{product_id}", response_model=ProductResponse)
 def update_product(
     product_id: int,
     product: ProductCreate,
@@ -94,7 +94,7 @@ def update_product(
 
     return db_product
 
-@app.delete("/products/{product_id}")
+@app.delete("/products/{product_id}", response_model=ProductResponse)
 def delete_product(product_id: int, db: Session = Depends(get_db)):
     db_product = (
         db.query(ProductModel)
