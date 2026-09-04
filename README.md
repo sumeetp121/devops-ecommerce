@@ -322,6 +322,46 @@ description
 price
 category
 ```
+---
+
+## Milestone 7 — PostgreSQL-Backed Product API
+
+Migrated the Product Catalog REST API from in-memory storage to PostgreSQL using SQLAlchemy.
+
+Completed:
+
+- GET `/products` using PostgreSQL
+- GET `/products/{product_id}` using PostgreSQL
+- POST `/products` using PostgreSQL
+- PUT `/products/{product_id}` using PostgreSQL
+- DELETE `/products/{product_id}` using PostgreSQL
+- PostgreSQL-generated product IDs
+- Separate API schemas (`ProductCreate`, `ProductResponse`)
+- SQLAlchemy `Product` database model
+- FastAPI database session dependency
+- Removed the old in-memory product list
+- Updated automated tests for database-backed behavior
+
+### Data Flow
+
+```text
+Client
+  │
+  ▼
+FastAPI REST API
+  │
+  ▼
+Pydantic API Schema
+  │
+  ▼
+SQLAlchemy ORM
+  │
+  ▼
+PostgreSQL
+  │
+  ▼
+products table
+```
 
 ---
 
@@ -347,13 +387,16 @@ The project has successfully progressed from a basic FastAPI service to a servic
 * [x] Environment-based database configuration
 * [x] SQLAlchemy Product model
 * [x] Python → SQLAlchemy → PostgreSQL connectivity
+* [x] Migrate Product API from in-memory data to PostgreSQL
+* [x] Separate API schemas from database models
+* [x] Add database CRUD operations
+* [x] Update automated tests for PostgreSQL-backed API
 
 ### In Progress
 
-* [ ] Migrate Product API from in-memory data to PostgreSQL
-* [ ] Separate API schemas from database models
-* [ ] Add database CRUD operations
-* [ ] Update automated tests for PostgreSQL-backed API
+- [ ] Improve API response/schema handling
+- [ ] Add database test isolation/fixtures
+- [ ] Containerize the Product Catalog service
 
 ---
 

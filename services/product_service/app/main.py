@@ -1,37 +1,34 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from services.product_service.app.database import SessionLocal
+from services.product_service.app.models import Product as ProductModel
 
 app = FastAPI(title="Product Catalog Service")
-class Product(BaseModel):
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+class ProductCreate(BaseModel):
+    name: str
+    description: str
+    price: float
+    category: str
+
+
+class ProductResponse(BaseModel):
     id: int
     name: str
     description: str
     price: float
     category: str
 
-products = [
-    {
-        "id": 1,
-        "name": "Laptop",
-        "description": "15-inch business laptop",
-        "price": 75000,
-        "category": "Electronics",
-    },
-    {
-        "id": 2,
-        "name": "Wireless Mouse",
-        "description": "Ergonomic wireless mouse",
-        "price": 1500,
-        "category": "Accessories",
-    },
-    {
-        "id": 3,
-        "name": "Keyboard",
-        "description": "Mechanical keyboard",
-        "price": 3500,
-        "category": "Accessories",
-    },
-]
+
 
 
 @app.get("/")
@@ -45,37 +42,70 @@ def health():
 
 
 @app.get("/products")
-def get_products():
-    return products
+def get_products(db: Session = Depends(get_db)):
+    return db.query(ProductModel).all()
 
 @app.post("/products")
-def create_product(product: Product):
-    products.append(product.model_dump())
-    return product
+def create_product(product: ProductCreate, db: Session = Depends(get_db)):
+    db_product = ProductModel(
+        name=product.name,
+        description=product.description,
+        price=product.price,
+        category=product.category,
+    )
+
+    db.add(db_product)
+    db.commit()
+    db.refresh(db_product)
+
+    return db_product
 
 @app.get("/products/{product_id}")
-def get_product(product_id: int):
-    for product in products:
-        if product["id"] == product_id:
-            return product
+def get_product(product_id: int, db: Session = Depends(get_db)):
+    product = db.query(ProductModel).filter(ProductModel.id == product_id).first()
 
-    raise HTTPException(status_code=404, detail="Product not found")
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    return product
 
 @app.put("/products/{product_id}")
-def update_product(product_id: int, product: Product):
-    for index, existing_product in enumerate(products):
-        if existing_product["id"] == product_id:
-            products[index] = product.model_dump()
-            return products[index]
+def update_product(
+    product_id: int,
+    product: ProductCreate,
+    db: Session = Depends(get_db),
+):
+    db_product = (
+        db.query(ProductModel)
+        .filter(ProductModel.id == product_id)
+        .first()
+    )
 
-    raise HTTPException(status_code=404, detail="Product not found")
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Product not found")
 
+    db_product.name = product.name
+    db_product.description = product.description
+    db_product.price = product.price
+    db_product.category = product.category
+
+    db.commit()
+    db.refresh(db_product)
+
+    return db_product
 
 @app.delete("/products/{product_id}")
-def delete_product(product_id: int):
-    for index, product in enumerate(products):
-        if product["id"] == product_id:
-            deleted_product = products.pop(index)
-            return deleted_product
+def delete_product(product_id: int, db: Session = Depends(get_db)):
+    db_product = (
+        db.query(ProductModel)
+        .filter(ProductModel.id == product_id)
+        .first()
+    )
 
-    raise HTTPException(status_code=404, detail="Product not found")
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    db.delete(db_product)
+    db.commit()
+
+    return db_product
