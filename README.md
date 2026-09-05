@@ -488,6 +488,99 @@ http://localhost:8000/docs
 
 ---
 
+## Milestone 11 — Docker Containerization & PostgreSQL Networking
+
+Containerized the Product Catalog service and PostgreSQL database using Docker.
+
+### Product Catalog Container
+
+Implemented a Docker image for the Product Catalog service using:
+
+* Python 3.12 slim base image
+* FastAPI
+* Uvicorn
+* SQLAlchemy
+* PostgreSQL driver
+* Environment-based database configuration
+* Port 8000 exposed by the container
+
+Docker image:
+
+```text
+devops-ecommerce-product-service:v1
+```
+
+### PostgreSQL Container
+
+Created a PostgreSQL 16 container with:
+
+* PostgreSQL 16
+* Dedicated Docker volume for persistent database storage
+* `ecommerce_db` database
+* `ecommerce_app` database user
+
+Docker volume:
+
+```text
+postgres-data
+```
+
+### Docker Networking
+
+Created a dedicated Docker bridge network:
+
+```text
+ecommerce-network
+```
+
+Connected the Product Catalog service and PostgreSQL containers to the same network.
+
+The Product Catalog service connects to PostgreSQL using the Docker service name:
+
+```text
+DB_HOST=postgres
+```
+
+Docker's internal DNS resolves:
+
+```text
+postgres → PostgreSQL container
+```
+
+### Application Flow
+
+```text
+Browser
+   |
+   v
+Host Port 8000
+   |
+   v
+Product Service Container
+   |
+   | Docker Network
+   v
+PostgreSQL Container
+   |
+   v
+postgres-data volume
+```
+
+### Verification
+
+Successfully verified:
+
+* Product Catalog container starts successfully
+* PostgreSQL container starts successfully
+* Docker DNS resolves the PostgreSQL container
+* Product Service connects to PostgreSQL over the Docker network
+* Existing product database was restored into the PostgreSQL container
+* Product API successfully returns all 25 products
+* `/health` endpoint returns healthy status
+
+This milestone demonstrates container-to-container communication, Docker networking, persistent volumes and database-backed application deployment.
+
+
 # Current Status
 
 The project has successfully progressed from a basic FastAPI service to a service connected to a real PostgreSQL database through SQLAlchemy.
@@ -516,11 +609,11 @@ The project has successfully progressed from a basic FastAPI service to a servic
 * [x] Update automated tests for PostgreSQL-backed API
 * [x] Improve API response/schema handling
 * [x] Add database test isolation/fixtures
+* [x] Containerize the Product Catalog service
 
 ### In Progress
 
-
-- [ ] Containerize the Product Catalog service
+- [ ] Docker Compose
 
 ---
 
