@@ -28,6 +28,19 @@ services:
     networks:
       - ecommerce-network
 
+  frontend:
+    build:
+      context: ./services/frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    environment:
+      PRODUCT_SERVICE_URL: http://product-service:8000
+    depends_on:
+      - product-service
+    networks:
+      - ecommerce-network
+
 volumes:
   postgres-data:
     external: true
