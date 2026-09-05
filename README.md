@@ -580,6 +580,118 @@ Successfully verified:
 
 This milestone demonstrates container-to-container communication, Docker networking, persistent volumes and database-backed application deployment.
 
+---
+
+## Milestone 12 — Docker Compose
+
+Replaced the manually created Docker containers with Docker Compose to define and manage the Product Catalog service and PostgreSQL database as a single application stack.
+
+### Docker Compose Configuration
+
+Created a `compose.yaml` file defining:
+
+* Product Catalog service
+* PostgreSQL 16 database
+* Docker network
+* Persistent PostgreSQL volume
+* Environment-based database configuration
+* Product Service port mapping
+* Service dependency using `depends_on`
+
+### Environment Configuration
+
+Database credentials and connection settings are stored in the local `.env` file instead of being hardcoded in `compose.yaml`.
+
+The `.env` file is excluded from Git using `.gitignore`.
+
+Compose reads the following variables:
+
+```text
+DB_USER
+DB_PASSWORD
+DB_NAME
+DB_HOST
+DB_PORT
+```
+
+The Product Service connects to PostgreSQL using:
+
+```text
+DB_HOST=postgres
+```
+
+### Persistent Storage
+
+Configured PostgreSQL to use the existing external Docker volume:
+
+```text
+postgres-data
+```
+
+This ensures that PostgreSQL data persists even when the containers are removed and recreated.
+
+### Docker Network
+
+Docker Compose creates a dedicated network for communication between the services:
+
+```text
+devops-ecommerce_ecommerce-network
+```
+
+The Product Service communicates with PostgreSQL through the Docker service name:
+
+```text
+product-service
+      |
+      | Docker Network
+      v
+postgres
+```
+
+PostgreSQL port `5432` is kept internal and is not exposed to the host.
+
+### Compose Application Flow
+
+```text
+compose.yaml
+      |
+      ├── Product Service
+      |       |
+      |       v
+      |   FastAPI
+      |       |
+      |       | Docker Network
+      |       v
+      |   PostgreSQL
+      |       |
+      |       v
+      |   postgres-data
+      |
+      └── Port 8000
+              |
+              v
+        Host / Browser
+```
+
+### Verification
+
+Successfully verified:
+
+* `docker compose config` validates the Compose configuration
+* Environment variables are loaded from `.env`
+* Product Service container starts successfully
+* PostgreSQL container starts successfully
+* Docker Compose creates the application network
+* Existing `postgres-data` volume is reused
+* PostgreSQL data remains persistent
+* Product Service connects to PostgreSQL using Docker DNS
+* PostgreSQL port `5432` remains internal
+* Product API successfully returns all 25 products
+* Unused duplicate Compose volume was safely removed
+
+This milestone demonstrates declarative container orchestration using Docker Compose, environment-based configuration, persistent storage, service discovery and multi-container application management.
+
+---
 
 # Current Status
 
