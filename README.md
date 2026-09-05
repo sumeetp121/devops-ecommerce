@@ -693,6 +693,271 @@ This milestone demonstrates declarative container orchestration using Docker Com
 
 ---
 
+# Milestone 13 — Full Docker Compose Stack
+
+## Overview
+
+Completed the Docker Compose integration for the e-commerce application by adding the **Frontend service** to the existing PostgreSQL and Product Catalog services.
+
+The complete local application stack now runs using Docker Compose.
+
+## Architecture
+
+```text
+                    Docker Compose
+                         │
+        ┌────────────────┼────────────────┐
+        │                │                │
+        ▼                ▼                ▼
+    Frontend       Product Service     PostgreSQL
+     :3000              :8000             :5432
+        │                │
+        │                │
+        └── HTTP ────────┘
+             Docker DNS
+        product-service:8000
+```
+
+All services communicate through the Docker Compose network:
+
+```text
+devops-ecommerce_ecommerce-network
+```
+
+## Frontend Service
+
+The frontend is built using **Node.js + Express**.
+
+Dockerfile:
+
+```text
+services/frontend/Dockerfile
+```
+
+The Docker image is built from:
+
+```text
+node:22-slim
+```
+
+The container exposes:
+
+```text
+3000
+```
+
+Docker Compose publishes:
+
+```text
+Host 3000 → Container 3000
+```
+
+## Product Service Communication
+
+The frontend does not use `localhost` to communicate with the Product Service.
+
+Instead, Docker Compose service-name DNS is used:
+
+```text
+PRODUCT_SERVICE_URL=http://product-service:8000
+```
+
+This allows the frontend container to communicate directly with the Product Service container over the Compose network.
+
+## PostgreSQL
+
+PostgreSQL continues to use the existing external Docker volume:
+
+```text
+postgres-data
+```
+
+This ensures the existing product data is preserved when containers are recreated.
+
+The Product Service connects to PostgreSQL using the Docker service name:
+
+```text
+DB_HOST=postgres
+```
+
+## Docker Compose Configuration
+
+The Compose stack now contains three services:
+
+```text
+postgres
+product-service
+frontend
+```
+
+The services are connected to:
+
+```text
+ecommerce-network
+```
+
+Compose creates the project-scoped network:
+
+```text
+devops-ecommerce_ecommerce-network
+```
+
+## Verification
+
+The complete request path was successfully tested:
+
+```text
+Browser
+   ↓
+Frontend :3000
+   ↓
+Product Service :8000
+   ↓
+PostgreSQL :5432
+```
+
+The following API request successfully returned all **25 products**:
+
+```bash
+curl http://localhost:3000/api/products
+```
+
+This verified:
+
+* Frontend container is running.
+* Frontend port `3000` is accessible.
+* Frontend can resolve `product-service` through Docker DNS.
+* Frontend can communicate with Product Service.
+* Product Service can communicate with PostgreSQL.
+* Existing PostgreSQL data is available.
+
+## Troubleshooting Performed
+
+During testing, the frontend initially failed to communicate with the Product Service.
+
+Investigation showed that the frontend and Product Service were attached to different Docker networks.
+
+Network inspection was performed using:
+
+```bash
+docker network inspect ecommerce-network
+```
+
+and:
+
+```bash
+docker inspect product-service
+```
+
+The frontend was then tested against the correct Compose network.
+
+A temporary frontend container was subsequently removed and recreated through Docker Compose, which resulted in the correct network attachment and successful communication.
+
+## Key DevOps Learning
+
+### Container-to-container communication
+
+Inside Docker Compose, containers should communicate using **service names**, not host `localhost`.
+
+Incorrect:
+
+```text
+http://localhost:8000
+```
+
+Correct:
+
+```text
+http://product-service:8000
+```
+
+Similarly, the Product Service connects to PostgreSQL using:
+
+```text
+postgres:5432
+```
+
+rather than:
+
+```text
+localhost:5432
+```
+
+# The Architecture Built:
+
+```text
+                         Ubuntu VM
+                            │
+                         Docker
+                            │
+             ┌──────────────┴──────────────┐
+             │     Docker Compose          │
+             │                             │
+             │   ecommerce-network         │
+             │                             │
+             │  ┌───────────────┐          │
+Browser ────►│  │   Frontend    │          │
+localhost    │  │     :3000     │          │
+:3000        │  └───────┬───────┘          │
+             │          │                  │
+             │          │ product-service  │
+             │          │ :8000            │
+             │          ▼                  │
+             │  ┌───────────────┐          │
+             │  │    Product    │          │
+             │  │    Service    │          │
+             │  │     :8000     │          │
+             │  └───────┬───────┘          │
+             │          │                  │
+             │          │ postgres:5432    │
+             │          ▼                  │
+             │  ┌───────────────┐          │
+             │  │  PostgreSQL   │          │
+             │  │     :5432     │          │
+             │  └───────┬───────┘          │
+             │          │                  │
+             └──────────┼──────────────────┘
+                        ▼
+                 postgres-data
+                    volume
+
+```
+
+## Files Added/Updated
+
+```text
+compose.yaml
+services/frontend/Dockerfile
+```
+
+## Git Milestone
+
+**Milestone 13: Complete Docker Compose frontend integration**
+
+Commit:
+
+```text
+Complete Docker Compose frontend integration
+```
+
+Changes were committed and pushed to the GitHub `main` branch.
+
+## Current Status
+
+| Component                | Status       |
+| ------------------------ | ------------ |
+| Frontend                 | ✅ Dockerized |
+| Product Service          | ✅ Dockerized |
+| PostgreSQL               | ✅ Dockerized |
+| Docker Network           | ✅ Working    |
+| Frontend → Product API   | ✅ Working    |
+| Product API → PostgreSQL | ✅ Working    |
+| Docker Compose           | ✅ Working    |
+| Git Commit               | ✅ Completed  |
+| GitHub Push              | ✅ Completed  |
+
+---
+
 # Current Status
 
 The project has successfully progressed from a basic FastAPI service to a service connected to a real PostgreSQL database through SQLAlchemy.
