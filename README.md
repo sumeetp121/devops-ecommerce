@@ -51,25 +51,52 @@ The project covers:
 ## Development Approach
 
 ```text
-Local Development
-       │
-       ▼
-Docker
-       │
-       ▼
-Kubernetes
-       │
-       ▼
-AWS
-       │
-       ▼
-EKS
-       │
-       ▼
-GitOps
-       │
-       ▼
-CI/CD
+                         DEVOPS E-COMMERCE PROJECT
+                                  │
+                                  ▼
+                         ┌─────────────────┐
+                         │ Local Development│
+                         └────────┬────────┘
+                                  │
+             ┌────────────────────┼────────────────────┐
+             ▼                    ▼                    ▼
+        Python/FastAPI       Node.js              Java/Spring Boot
+             │                 Frontend                │
+             └────────────────────┼────────────────────┘
+                                  ▼
+                           PostgreSQL
+                           SQLAlchemy
+                                  │
+             ┌────────────────────┼────────────────────┐
+             ▼                    ▼                    ▼
+           Redis                Kafka                 gRPC
+             │                    │                    │
+             └────────────────────┼────────────────────┘
+                                  ▼
+                           Docker / Compose
+                                  │
+                                  ▼
+                         Kubernetes / Minikube
+                                  │
+                                  ▼
+                                Helm
+                                  │
+                                  ▼
+                             Terraform
+                                  │
+                                  ▼
+                                AWS
+                                  │
+                                  ▼
+                                EKS
+                                  │
+                                  ▼
+                              Argo CD
+                              GitOps
+                                  │
+                                  ▼
+                          GitHub Actions
+                               CI/CD
 ```
 
 The project is intentionally developed in stages so that each layer can be tested and understood before moving to the next one.
@@ -575,7 +602,7 @@ Successfully verified:
 * Docker DNS resolves the PostgreSQL container
 * Product Service connects to PostgreSQL over the Docker network
 * Existing product database was restored into the PostgreSQL container
-* Product API successfully returns all 25 products
+* Product API successfully returns all 35 products
 * `/health` endpoint returns healthy status
 
 This milestone demonstrates container-to-container communication, Docker networking, persistent volumes and database-backed application deployment.
@@ -686,7 +713,7 @@ Successfully verified:
 * PostgreSQL data remains persistent
 * Product Service connects to PostgreSQL using Docker DNS
 * PostgreSQL port `5432` remains internal
-* Product API successfully returns all 25 products
+* Product API successfully returns all 35 products
 * Unused duplicate Compose volume was safely removed
 
 This milestone demonstrates declarative container orchestration using Docker Compose, environment-based configuration, persistent storage, service discovery and multi-container application management.
@@ -816,7 +843,7 @@ Product Service :8000
 PostgreSQL :5432
 ```
 
-The following API request successfully returned all **25 products**:
+The following API request successfully returned all **35 products**:
 
 ```bash
 curl http://localhost:3000/api/products
@@ -944,106 +971,355 @@ Changes were committed and pushed to the GitHub `main` branch.
 
 ## Current Status
 
-| Component                | Status       |
-| ------------------------ | ------------ |
-| Frontend                 | ✅ Dockerized |
-| Product Service          | ✅ Dockerized |
-| PostgreSQL               | ✅ Dockerized |
-| Docker Network           | ✅ Working    |
-| Frontend → Product API   | ✅ Working    |
-| Product API → PostgreSQL | ✅ Working    |
-| Docker Compose           | ✅ Working    |
-| Git Commit               | ✅ Completed  |
-| GitHub Push              | ✅ Completed  |
-
----
-
-# Current Status
-
-The project has successfully progressed from a basic FastAPI service to a service connected to a real PostgreSQL database through SQLAlchemy.
+The project has progressed from a basic FastAPI service to a complete local Docker + Kubernetes deployment.
 
 ### Completed
 
-* [x] Git repository
-* [x] GitHub repository
-* [x] Project structure
-* [x] README
-* [x] Python Product Catalog microservice
-* [x] REST API
-* [x] CRUD operations
-* [x] Pydantic validation
-* [x] Automated tests
-* [x] PostgreSQL installation
-* [x] PostgreSQL database
-* [x] Product database table
-* [x] SQLAlchemy
-* [x] Environment-based database configuration
-* [x] SQLAlchemy Product model
-* [x] Python → SQLAlchemy → PostgreSQL connectivity
-* [x] Migrate Product API from in-memory data to PostgreSQL
-* [x] Separate API schemas from database models
-* [x] Add database CRUD operations
-* [x] Update automated tests for PostgreSQL-backed API
-* [x] Improve API response/schema handling
-* [x] Add database test isolation/fixtures
-* [x] Containerize the Product Catalog service
+* ✅ Git repository
+* ✅ GitHub repository
+* ✅ Project structure
+* ✅ README
+* ✅ Python Product Catalog microservice
+* ✅ REST API
+* ✅ CRUD operations
+* ✅ Pydantic validation
+* ✅ Automated tests
+* ✅ PostgreSQL installation
+* ✅ PostgreSQL database
+* ✅ Product database table
+* ✅ SQLAlchemy
+* ✅ Environment-based database configuration
+* ✅ SQLAlchemy Product model
+* ✅ Python → SQLAlchemy → PostgreSQL connectivity
+* ✅ PostgreSQL-backed Product API
+* ✅ Database test isolation/fixtures
+* ✅ Product Catalog containerization
+* ✅ Docker Compose
+* ✅ Frontend containerization
+* ✅ Frontend → Product Service communication
+* ✅ Kubernetes/Minikube deployment
+* ✅ Kubernetes PostgreSQL persistent storage
+* ✅ Product Service Kubernetes Deployment and Service
+* ✅ Frontend Kubernetes Deployment and Service
+* ✅ NGINX Ingress
+* ✅ Product database backup and restore into Kubernetes PostgreSQL
+* ✅ 35 existing products verified in Kubernetes PostgreSQL
+* ✅ Kubernetes resource requests and limits
+* ✅ Docker images pushed to Docker Hub
+* ✅ Complete local Kubernetes application verified end to end
 
-### In Progress
+### Current Milestone
 
-- [ ] Docker Compose
+**Milestone 14 — Local Kubernetes Deployment**
+
+The complete application is now running locally on Minikube:
+
+```text
+Browser
+   │
+   ▼
+NGINX Ingress
+   │
+   ▼
+Frontend Service
+   │
+   ▼
+Frontend Pod
+   │
+   ▼
+Product Service
+   │
+   ▼
+PostgreSQL
+   │
+   ▼
+Persistent Storage
+```
+
+The storefront renders successfully and the frontend can retrieve the 35 products from the Product Catalog service.
+
+### Next Milestone
+
+**Milestone 15 — Redis**
+
+Redis will be added and integrated locally before moving to Kafka, gRPC, Java/Spring Boot and the cloud phases.
 
 ---
 
-# Upcoming Roadmap
+# Complete Project Roadmap
+
+The project follows the agreed progression:
 
 ```text
-Product Service
-      │
-      ▼
-PostgreSQL CRUD
-      │
-      ▼
-Node.js Services
-      │
-      ▼
-Java / Spring Boot Services
-      │
-      ▼
-Docker
-      │
-      ▼
-Docker Compose
-      │
-      ▼
-Kafka + Redis
-      │
-      ▼
-Kubernetes
-      │
-      ▼
+LOCAL DEVELOPMENT
+        │
+        ▼
+Docker / Docker Compose
+        │
+        ▼
+Kubernetes / Minikube
+        │
+        ▼
+Redis
+        │
+        ▼
+Kafka
+        │
+        ▼
+gRPC
+        │
+        ▼
+Java / Spring Boot
+        │
+        ▼
 Helm
-      │
-      ▼
-Terraform
-      │
-      ▼
-AWS
-      │
-      ▼
-EKS
-      │
-      ▼
+        │
+        ▼
 GitHub Actions
-      │
-      ▼
-ECR
-      │
-      ▼
+        │
+        ▼
+Terraform
+        │
+        ▼
+AWS
+        │
+        ▼
+EKS
+        │
+        ▼
 Argo CD
-      │
-      ▼
+        │
+        ▼
 GitOps
 ```
+
+Each major stage will be implemented, tested and verified before moving to the next stage.
+
+## Phase 1 — Local Application Foundation
+
+- ✅ FastAPI Product Catalog service
+- ✅ PostgreSQL
+- ✅ SQLAlchemy
+- ✅ REST CRUD API
+- ✅ Node.js/Express frontend
+- ✅ Docker
+- ✅ Docker Compose
+- ✅ Kubernetes/Minikube
+- ✅ Kubernetes persistent storage
+- ✅ NGINX Ingress
+
+## Phase 2 — Redis
+
+- [ ] Deploy Redis locally
+- [ ] Integrate Redis with the Product Catalog service
+- [ ] Implement product caching
+- [ ] Test cache hit/miss behavior
+- [ ] Add Redis Kubernetes configuration
+- [ ] Verify Redis service communication
+
+## Phase 3 — Apache Kafka
+
+- [ ] Deploy Kafka locally
+- [ ] Learn brokers, topics, partitions and consumers
+- [ ] Create product-related events
+- [ ] Implement producer/consumer flow
+- [ ] Test event-driven communication
+- [ ] Deploy Kafka components to Kubernetes
+
+## Phase 4 — gRPC
+
+- [ ] Define protobuf contracts
+- [ ] Generate client/server code
+- [ ] Build a selected internal gRPC API
+- [ ] Test REST and gRPC communication
+- [ ] Integrate gRPC with Kubernetes services
+
+## Phase 5 — Java / Spring Boot
+
+- [ ] Build a Java/Spring Boot microservice
+- [ ] Add REST endpoints
+- [ ] Connect Spring Boot to PostgreSQL
+- [ ] Integrate it with existing services
+- [ ] Add selected gRPC communication
+- [ ] Containerize the Spring Boot service
+- [ ] Deploy it to Kubernetes
+
+## Phase 6 — Helm
+
+- [ ] Learn Helm charts
+- [ ] Convert Kubernetes manifests into Helm templates
+- [ ] Create `values.yaml`
+- [ ] Parameterize images, replicas, resources and service settings
+- [ ] Install and upgrade the application using Helm
+- [ ] Test Helm rollback
+- [ ] Validate the complete application locally through Helm
+
+## Phase 7 — GitHub Actions
+
+- [ ] Create CI workflow
+- [ ] Run automated tests
+- [ ] Validate application configuration
+- [ ] Build Docker images
+- [ ] Push images to Docker Hub initially
+- [ ] Prepare the workflow for AWS/ECR
+
+## Phase 8 — Terraform
+
+- [ ] Learn Terraform fundamentals
+- [ ] Providers, resources, variables and outputs
+- [ ] Terraform state
+- [ ] Modules
+- [ ] AWS networking infrastructure
+- [ ] IAM infrastructure
+- [ ] EKS infrastructure as code
+
+## Phase 9 — AWS / EKS
+
+- [ ] Create AWS networking
+- [ ] Create IAM roles and policies
+- [ ] Create EKS cluster
+- [ ] Configure EKS worker/node infrastructure
+- [ ] Create ECR repositories
+- [ ] Push application images to ECR
+- [ ] Deploy the application to EKS
+- [ ] Validate networking, storage and service communication
+
+## Phase 10 — Argo CD / GitOps
+
+- [ ] Install Argo CD
+- [ ] Connect Argo CD to GitHub
+- [ ] Store deployment configuration in Git
+- [ ] Configure Helm-based application deployment
+- [ ] Configure Argo CD synchronization
+- [ ] Deploy the application to EKS using GitOps
+- [ ] Test Git commit → Argo CD sync → EKS deployment
+
+## Phase 11 — Final CI/CD + GitOps
+
+Final target flow:
+
+```text
+Developer
+    │
+    ▼
+GitHub
+    │
+    ▼
+GitHub Actions
+    │
+    ├── Test
+    ├── Build
+    ├── Docker Image
+    └── Push Image → ECR
+                         │
+                         ▼
+                        AWS
+                         │
+                         ▼
+                        EKS
+                         │
+                         ▼
+                       Argo CD
+                         │
+                         ▼
+                       Helm
+                         │
+                         ▼
+                      GitOps
+```
+
+### Responsibility split
+
+```text
+GitHub Actions
+    → CI
+    → Test
+    → Build
+    → Publish container images
+
+Argo CD
+    → CD
+    → GitOps
+    → Kubernetes desired-state synchronization
+    → Deploy to EKS
+```
+
+This project will use **GitHub Actions instead of Jenkins**.
+
+---
+
+# Milestone Sequence
+
+```text
+01  Project Foundation                        ✅
+02  Product Catalog Service                   ✅
+03  Automated Testing                         ✅
+04  PostgreSQL Setup                          ✅
+05  Python → PostgreSQL Connectivity          ✅
+06  SQLAlchemy Product Model                  ✅
+07  PostgreSQL-Backed Product API             ✅
+08  API Response Schemas                      ✅
+09  Database Test Isolation                   ✅
+10  E-Commerce Website & Admin Dashboard      ✅
+11  Docker Containerization                   ✅
+12  Docker Compose                            ✅
+13  Full Docker Compose Stack                 ✅
+14  Kubernetes / Minikube                     ✅
+15  Redis                                     ⏳ NEXT
+16  Kafka                                     ⏳
+17  gRPC                                      ⏳
+18  Java / Spring Boot                        ⏳
+19  Helm                                      ⏳
+20  GitHub Actions                            ⏳
+21  Terraform                                 ⏳
+22  AWS                                       ⏳
+23  EKS                                       ⏳
+24  Argo CD                                   ⏳
+25  GitOps                                    ⏳
+26  Final CI/CD + GitOps Architecture         ⏳
+```
+
+---
+
+# Important Project Rule
+
+The project will **not jump directly to AWS**.
+
+We will first make the application complete and stable locally:
+
+```text
+Application
+   ↓
+Redis
+   ↓
+Kafka
+   ↓
+gRPC
+   ↓
+Java/Spring Boot
+   ↓
+Helm
+   ↓
+Local Kubernetes validation
+```
+
+Only after the local stack is working will we move to:
+
+```text
+Terraform
+   ↓
+AWS
+   ↓
+EKS
+   ↓
+ECR
+   ↓
+Argo CD
+   ↓
+GitOps
+```
+
+This keeps the project practical and ensures that every technology is understood before it becomes part of the cloud architecture.
 
 ---
 
