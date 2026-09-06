@@ -1,3 +1,4 @@
+import json
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -41,7 +42,29 @@ def health():
 
 @app.get("/products", response_model=list[ProductResponse])
 def get_products(db: Session = Depends(get_db)):
-    return db.query(ProductModel).all()
+    cache_key = "products"
+
+    cached_products = redis_client.get(cache_key)
+
+    if cached_products:
+        return json.loads(cached_products)
+
+    products = db.query(ProductModel).all()
+
+    products_data = [
+        {
+            "id": product.id,
+            "name": product.name,
+            "description": product.description,
+            "price": float(product.price),
+            "category": product.category,
+        }
+        for product in products
+    ]
+
+    redis_client.set(cache_key, json.dumps(products_data), ex=60)
+
+    return products_data
 
 @app.post("/products", response_model=ProductResponse)
 def create_product(product: ProductCreate, db: Session = Depends(get_db)):
