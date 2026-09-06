@@ -1042,7 +1042,339 @@ The storefront renders successfully and the frontend can retrieve the 35 product
 
 **Milestone 15 — Redis**
 
-Redis will be added and integrated locally before moving to Kafka, gRPC, Java/Spring Boot and the cloud phases.
+# Redis Caching
+
+This project uses **Redis** to cache product data and reduce repeated database queries.
+
+## Architecture
+
+```text
+Frontend
+   |
+   v
+Product Service
+   |
+   +------> Redis
+   |          |
+   |          +-- products
+   |          +-- product:<id>
+   |
+   +------> PostgreSQL
+```
+
+Redis is used as a **cache**, while PostgreSQL remains the main database.
+
+## Redis Configuration
+
+Redis is deployed inside Kubernetes using Helm.
+
+### Redis Image
+
+```yaml
+redis:
+  replicas: 1
+
+  image:
+    repository: redis
+    tag: "7"
+```
+
+### Resources
+
+```yaml
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+
+  limits:
+    cpu: "250m"
+    memory: "256Mi"
+```
+
+## Kubernetes Resources
+
+The Helm chart creates:
+
+* Redis Deployment
+* Redis ClusterIP Service
+
+Redis is available inside the `ecommerce` namespace at:
+
+```text
+redis:6379
+```
+
+The Product Service receives:
+
+```yaml
+- name: REDIS_HOST
+  value: redis
+
+- name: REDIS_PORT
+  value: "6379"
+```
+
+## Product List Cache
+
+The endpoint:
+
+```text
+GET /products
+```
+
+uses the Redis key:
+
+```text
+products
+```
+
+Flow:
+
+```text
+GET /products
+      |
+      v
+Check Redis
+      |
+   +--+--+
+   |     |
+ HIT    MISS
+   |     |
+   |     v
+   |  PostgreSQL
+   |     |
+   |     v
+   |  Store in Redis
+   |     |
+   +-----+
+      |
+      v
+   Response
+```
+
+The cache expires after **60 seconds**.
+
+```python
+redis_client.set(
+    cache_key,
+    json.dumps(products_data),
+    ex=60
+)
+```
+
+## Individual Product Cache
+
+The endpoint:
+
+```text
+GET /products/{product_id}
+```
+
+uses a separate Redis key:
+
+```text
+product:<product_id>
+```
+
+Example:
+
+```text
+product:1
+product:2
+product:3
+```
+
+This allows individual products to be cached separately.
+
+The cache also expires after **60 seconds**.
+
+## Cache Invalidation
+
+When product data changes, the related cache is deleted.
+
+### Create Product
+
+When a new product is created:
+
+```python
+redis_client.delete("products")
+```
+
+This clears the product list cache.
+
+### Update Product
+
+When a product is updated:
+
+```python
+redis_client.delete("products")
+redis_client.delete(f"product:{product_id}")
+```
+
+Both the product list and individual product cache are cleared.
+
+### Delete Product
+
+When a product is deleted:
+
+```python
+redis_client.delete("products")
+redis_client.delete(f"product:{product_id}")
+```
+
+Again, both caches are cleared.
+
+## Why Cache Invalidation Is Needed
+
+Without invalidation, Redis could return old product information.
+
+Example:
+
+```text
+PostgreSQL
+Product 1 price = 100
+
+Redis
+Product 1 price = 100
+```
+
+If the price changes:
+
+```text
+PostgreSQL
+Product 1 price = 150
+```
+
+but Redis still contains:
+
+```text
+Product 1 price = 100
+```
+
+the application could return stale data.
+
+Therefore, the application deletes the affected cache whenever product data changes.
+
+## Verify Redis
+
+Check Redis pod:
+
+```bash
+kubectl get pods -n ecommerce
+```
+
+Check Redis service:
+
+```bash
+kubectl get service redis -n ecommerce
+```
+
+Check the product list cache:
+
+```bash
+kubectl exec -n ecommerce deployment/redis -- \
+  redis-cli EXISTS products
+```
+
+Check an individual product cache:
+
+```bash
+kubectl exec -n ecommerce deployment/redis -- \
+  redis-cli EXISTS product:1
+```
+
+View the cached product:
+
+```bash
+kubectl exec -n ecommerce deployment/redis -- \
+  redis-cli GET product:1
+```
+
+View the product list cache:
+
+```bash
+kubectl exec -n ecommerce deployment/redis -- \
+  redis-cli GET products
+```
+
+Check TTL:
+
+```bash
+kubectl exec -n ecommerce deployment/redis -- \
+  redis-cli TTL products
+```
+
+## Current Implementation
+
+Currently Redis caching is implemented for the **Product Service**:
+
+```text
+GET /products
+GET /products/{product_id}
+```
+
+The cache is not currently applied to every service or every API in the application.
+
+## Deployment
+
+Redis is managed by the ecommerce Helm chart:
+
+```text
+infrastructure/helm/ecommerce/
+├── templates/
+│   ├── redis-deployment.yaml
+│   └── redis-service.yaml
+└── values.yaml
+```
+
+Validate the chart:
+
+```bash
+helm lint infrastructure/helm/ecommerce
+```
+
+Render the Kubernetes manifests:
+
+```bash
+helm template ecommerce infrastructure/helm/ecommerce
+```
+
+Upgrade the deployment:
+
+```bash
+helm upgrade ecommerce infrastructure/helm/ecommerce -n ecommerce
+```
+
+Check the Helm release:
+
+```bash
+helm list -n ecommerce
+```
+
+## Result
+
+The current architecture is:
+
+```text
+Frontend
+   |
+   v
+Product Service
+   |
+   +---- Redis
+   |       |
+   |       +-- products
+   |       +-- product:<id>
+   |
+   +---- PostgreSQL
+```
+
+**PostgreSQL = source of truth**
+
+**Redis = temporary cache**
+
+**Product Service = decides when to read/write/delete cache**
 
 ---
 
@@ -1265,7 +1597,7 @@ This project will use **GitHub Actions instead of GitHub Actions**.
 12  Docker Compose                            ✅
 13  Full Docker Compose Stack                 ✅
 14  Kubernetes / Minikube                     ✅
-15  Redis                                     ⏳ NEXT
+15  Redis                                     ✅
 16  Kafka                                     ⏳
 17  gRPC                                      ⏳
 18  Java / Spring Boot                        ⏳

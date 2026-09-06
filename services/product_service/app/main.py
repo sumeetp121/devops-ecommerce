@@ -9,12 +9,14 @@ from services.product_service.app.redis_client import redis_client
 
 app = FastAPI(title="Product Catalog Service")
 
+
 def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
 
 class ProductCreate(BaseModel):
     name: str
@@ -29,6 +31,7 @@ class ProductResponse(BaseModel):
     description: str
     price: float
     category: str
+
 
 @app.get("/")
 def root():
@@ -66,6 +69,7 @@ def get_products(db: Session = Depends(get_db)):
 
     return products_data
 
+
 @app.post("/products", response_model=ProductResponse)
 def create_product(product: ProductCreate, db: Session = Depends(get_db)):
     db_product = ProductModel(
@@ -79,16 +83,42 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_product)
 
+    # Clear products list cache because a new product was added
+    redis_client.delete("products")
+
     return db_product
+
 
 @app.get("/products/{product_id}", response_model=ProductResponse)
 def get_product(product_id: int, db: Session = Depends(get_db)):
-    product = db.query(ProductModel).filter(ProductModel.id == product_id).first()
+    cache_key = f"product:{product_id}"
+
+    cached_product = redis_client.get(cache_key)
+
+    if cached_product:
+        return json.loads(cached_product)
+
+    product = (
+        db.query(ProductModel)
+        .filter(ProductModel.id == product_id)
+        .first()
+    )
 
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    return product
+    product_data = {
+        "id": product.id,
+        "name": product.name,
+        "description": product.description,
+        "price": float(product.price),
+        "category": product.category,
+    }
+
+    redis_client.set(cache_key, json.dumps(product_data), ex=60)
+
+    return product_data
+
 
 @app.put("/products/{product_id}", response_model=ProductResponse)
 def update_product(
@@ -113,7 +143,12 @@ def update_product(
     db.commit()
     db.refresh(db_product)
 
+    # Clear both list and individual product caches
+    redis_client.delete("products")
+    redis_client.delete(f"product:{product_id}")
+
     return db_product
+
 
 @app.delete("/products/{product_id}", response_model=ProductResponse)
 def delete_product(product_id: int, db: Session = Depends(get_db)):
@@ -128,5 +163,9 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
 
     db.delete(db_product)
     db.commit()
+
+    # Clear both list and individual product caches
+    redis_client.delete("products")
+    redis_client.delete(f"product:{product_id}")
 
     return db_product
