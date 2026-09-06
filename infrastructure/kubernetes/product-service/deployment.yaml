@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: product-service
-          image: sumeetp111/devops-ecommerce-product-service:v1
+          image: sumeetp111/devops-ecommerce-product-service:v2
           imagePullPolicy: Always
 
           ports:
@@ -65,3 +65,9 @@ spec:
                 secretKeyRef:
                   name: product-db-secret
                   key: DB_PASSWORD
+
+            - name: REDIS_HOST
+              value: redis
+
+            - name: REDIS_PORT
+              value: "6379"

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from services.product_service.app.database import SessionLocal
 from services.product_service.app.models import Product as ProductModel
+from services.product_service.app.redis_client import redis_client
 
 app = FastAPI(title="Product Catalog Service")
 
@@ -27,9 +28,6 @@ class ProductResponse(BaseModel):
     description: str
     price: float
     category: str
-
-
-
 
 @app.get("/")
 def root():
