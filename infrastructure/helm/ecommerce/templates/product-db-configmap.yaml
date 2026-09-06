@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: product-db-config
+  namespace: ecommerce
+
+data:
+  DB_HOST: {{ .Values.postgres.databases.host }}
+  DB_PORT: {{ .Values.postgres.databases.port | quote }}
+  DB_NAME: {{ .Values.postgres.databases.name }}

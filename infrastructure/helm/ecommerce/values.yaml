@@ -1,0 +1,40 @@
+frontend:
+  replicas: 2
+  image:
+    repository: sumeetp111/devops-ecommerce-frontend
+    tag: latest
+
+productService:
+  replicas: 1
+  image:
+    repository: sumeetp111/devops-ecommerce-product-service
+    tag: v1
+
+postgres:
+  replicas: 1
+
+  image:
+    repository: postgres
+    tag: "16"
+
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+  storage:
+    storageClassName: ecommerce-storage
+    size: "2Gi" 
+
+  databases:
+    host: postgres
+    port: "5432"
+    name: ecommerce_db
+
+  credentials:
+    username: ecommerce_app
+    password: devops123
