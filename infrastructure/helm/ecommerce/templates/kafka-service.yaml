@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+spec:
+  type: ClusterIP
+  selector:
+    app: kafka
+
+  ports:
+    - name: internal
+      port: {{ .Values.kafka.ports.internal }}
+      targetPort: {{ .Values.kafka.ports.internal }}
+      protocol: TCP
+
+    - name: external
+      port: {{ .Values.kafka.ports.external }}
+      targetPort: {{ .Values.kafka.ports.external }}
+      protocol: TCP
+
+    - name: controller
+      port: {{ .Values.kafka.ports.controller }}
+      targetPort: {{ .Values.kafka.ports.controller }}
+      protocol: TCP

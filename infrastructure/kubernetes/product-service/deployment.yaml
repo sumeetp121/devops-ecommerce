@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: product-service
-          image: sumeetp111/devops-ecommerce-product-service:v2
+          image: sumeetp111/devops-ecommerce-product-service:v5
           imagePullPolicy: Always
 
           ports:
@@ -71,3 +71,6 @@ spec:
 
             - name: REDIS_PORT
               value: "6379"
+
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka:9094"

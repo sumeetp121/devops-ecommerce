@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from services.product_service.app.database import SessionLocal
 from services.product_service.app.models import Product as ProductModel
 from services.product_service.app.redis_client import redis_client
+from services.product_service.app.kafka_producer import send_product_event
 
 app = FastAPI(title="Product Catalog Service")
 
@@ -82,6 +83,14 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db)):
     db.add(db_product)
     db.commit()
     db.refresh(db_product)
+
+    send_product_event(
+        {
+            "event": "product_created",
+            "product_id": db_product.id,
+            "name": db_product.name,
+        }
+    )
 
     # Clear products list cache because a new product was added
     redis_client.delete("products")

@@ -1,1714 +1,1297 @@
 # DevOps E-Commerce Platform
 
-End-to-End DevOps implementation of a production-style polyglot microservices e-commerce platform.
+A hands-on DevOps project built to understand how a real application moves from local development to a containerized and Kubernetes-based deployment, and finally to AWS.
 
-The project is being built progressively from **local development → containers → Kubernetes → AWS → EKS → GitOps → CI/CD**.
+The application is intentionally kept simple. The main objective of this project is to learn how to build, package, deploy, automate, monitor, and operate an application using modern DevOps tools.
 
 ---
 
 ## Project Goal
 
-Build and deploy a production-style e-commerce microservices platform while implementing DevOps practices end to end.
-
-The project covers:
-
-* Microservices development
-* REST and gRPC communication
-* PostgreSQL and Redis
-* Kafka event-driven communication
-* Docker and Docker Compose
-* Kubernetes and Helm
-* Terraform infrastructure as code
-* AWS and EKS
-* GitHub Actions CI/CD
-* Argo CD GitOps
-* Monitoring, logging, security and troubleshooting
-
----
-
-## Technology Stack
-
-| Area               | Technology                          |
-| ------------------ | ----------------------------------- |
-| Backend            | Python, Node.js, Java / Spring Boot |
-| Python Framework   | FastAPI                             |
-| Database           | PostgreSQL                          |
-| ORM                | SQLAlchemy                          |
-| Cache              | Redis                               |
-| Messaging          | Apache Kafka                        |
-| API                | REST, selected gRPC                 |
-| Containers         | Docker, Docker Compose              |
-| Orchestration      | Kubernetes, Minikube                |
-| Package Management | Helm                                |
-| Infrastructure     | Terraform                           |
-| Cloud              | AWS                                 |
-| CI/CD              | GitHub Actions                      |
-| GitOps             | Argo CD                             |
-| Source Control     | Git / GitHub                        |
-
----
-
-## Development Approach
+The goal of this project is to build a small e-commerce application and take it through a complete DevOps lifecycle:
 
 ```text
-                         DEVOPS E-COMMERCE PROJECT
-                                  │
-                                  ▼
-                         ┌─────────────────┐
-                         │ Local Development│
-                         └────────┬────────┘
-                                  │
-             ┌────────────────────┼────────────────────┐
-             ▼                    ▼                    ▼
-        Python/FastAPI       Node.js              Java/Spring Boot
-             │                 Frontend                │
-             └────────────────────┼────────────────────┘
-                                  ▼
-                           PostgreSQL
-                           SQLAlchemy
-                                  │
-             ┌────────────────────┼────────────────────┐
-             ▼                    ▼                    ▼
-           Redis                Kafka                 gRPC
-             │                    │                    │
-             └────────────────────┼────────────────────┘
-                                  ▼
-                           Docker / Compose
-                                  │
-                                  ▼
-                         Kubernetes / Minikube
-                                  │
-                                  ▼
-                                Helm
-                                  │
-                                  ▼
-                             Terraform
-                                  │
-                                  ▼
-                                AWS
-                                  │
-                                  ▼
-                                EKS
-                                  │
-                                  ▼
-                              Argo CD
-                              GitOps
-                                  │
-                                  ▼
-                          GitHub Actions
-                               CI/CD
-```
+   Application
+    ↓
+   Python / FastAPI
+    ↓
+   Docker
+    ↓
+   Docker Compose
+    ↓
+   Kubernetes
+    ↓
+   Helm
+    ↓
+   CI/CD
+    ↓
+   AWS
+    ↓
+Monitoring & Operations
+````
 
-The project is intentionally developed in stages so that each layer can be tested and understood before moving to the next one.
+The same application should first work completely on a local Ubuntu machine and then be deployed to AWS.
 
 ---
 
-# Current Architecture
+# Objectives
 
-The project is currently in the **Product Catalog Service + PostgreSQL** stage.
+The project is designed to provide practical experience with:
+
+* Linux
+* Git and GitHub
+* Python application basics
+* Docker
+* Docker Compose
+* PostgreSQL
+* Redis
+* Kubernetes
+* Helm
+* GitHub Actions / CI/CD
+* Terraform
+* Ansible
+* AWS
+* Monitoring and logging
+* Application deployment
+* Troubleshooting
+* Infrastructure automation
+
+The focus is on understanding **how these technologies work together** in a real deployment.
+
+---
+
+# Application Overview
+
+The application is a simple e-commerce platform.
+
+The application provides a product catalog where users can:
+
+* View products
+* View a single product
+* Create a product
+* Update a product
+* Delete a product
+
+The application uses:
 
 ```text
-                    ┌──────────────┐
-                    │    Client    │
-                    └──────┬───────┘
-                           │
-                           ▼
-                ┌─────────────────────┐
-                │ Product Catalog API │
-                │       FastAPI       │
-                └──────────┬──────────┘
-                           │
-                           ▼
-                    ┌─────────────┐
-                    │  SQLAlchemy │
-                    │     ORM     │
-                    └──────┬──────┘
-                           │
-                           ▼
-                    ┌─────────────┐
-                    │ PostgreSQL  │
-                    │ ecommerce_db│
-                    └──────┬──────┘
-                           │
-                           ▼
-                    ┌─────────────┐
-                    │  products   │
-                    │    table    │
-                    └─────────────┘
+Frontend
+   ↓
+Product Service
+   ↓
+PostgreSQL
+   ↓
+ Redis
 ```
+
+Kafka is also used for application events.
+
+For example, when a product is created:
+
+```text
+User
+ ↓
+Product Service
+ ↓
+PostgreSQL
+ ↓
+Kafka
+ ↓
+Product Event
+```
+
+The application logic remains intentionally simple so that the main focus stays on DevOps and infrastructure.
+
+---
+
+# Technology Stack
+
+## Application
+
+* Python
+* FastAPI
+* SQLAlchemy
+
+## Database
+
+* PostgreSQL
+
+## Cache
+
+* Redis
+
+## Messaging
+
+* Apache Kafka
+
+## Containerization
+
+* Docker
+* Docker Compose
+
+## Container Orchestration
+
+* Kubernetes
+* Minikube
+
+## Kubernetes Package Management
+
+* Helm
+
+## CI/CD
+
+* GitHub Actions
+
+## Infrastructure as Code
+
+* Terraform
+
+## Configuration Management
+
+* Ansible
+
+## Cloud
+
+* AWS
+
+## Version Control
+
+* Git
+* GitHub
+
+## Monitoring and Logging
+
+Planned tools include:
+
+* Prometheus
+* Grafana
+* Kubernetes logs
+* Application logs
 
 ---
 
 # Repository Structure
 
+Current project structure:
+
 ```text
 devops-ecommerce/
-│
 ├── services/
-│   └── product_service/
-│       ├── app/
-│       │   ├── __init__.py
-│       │   ├── database.py
-│       │   ├── main.py
-│       │   ├── models.py
-│       │   └── __init__.py
-│       │
-│       └── tests/
-│           └── test_products.py
-│
-├── infrastructure/
-│   ├── terraform/
-│   └── kubernetes/
-│
-├── gitops/
-│
-├── .github/
-│   └── workflows/
-│
-├── docs/
-│
+│   ├── product_service/
+│   │   ├── app/
+│   │   │   ├── main.py
+│   │   │   ├── database.py
+│   │   │   ├── models.py
+│   │   │   ├── schemas.py
+│   │   │   ├── redis_client.py
+│   │   │   └── kafka_producer.py
+│   │   ├── Dockerfile
+│   │   └── requirements.txt
+│   └── frontend/
+│       ├── ...
+│       └── Dockerfile
+├── kubernetes/
+│   ├── ...
+├── helm/
+│   └── ...
+├── terraform/
+│   └── ...
+├── docker-compose.yml
 ├── .gitignore
-├── pytest.ini
 └── README.md
 ```
 
-> The repository structure will expand as additional microservices and infrastructure components are added.
+The directory structure will grow as the project progresses.
 
 ---
 
-# Implemented Milestones
+# Current Application
 
-## Milestone 1 — Project Foundation
+The main application is a FastAPI-based Product Catalog Service.
 
-Completed:
+The application exposes REST APIs.
 
-* Created the Git repository
-* Connected the project to GitHub
-* Configured Git user
-* Created project `.gitignore`
-* Created Python virtual environment
-* Established the initial project structure
-* Added project README
-
----
-
-## Milestone 2 — Product Catalog Service
-
-Created the first microservice using **Python + FastAPI**.
-
-Implemented:
-
-* FastAPI application
-* Root endpoint
-* Health endpoint
-* Product listing endpoint
-* Product lookup endpoint
-* Product creation endpoint
-* Product update endpoint
-* Product deletion endpoint
-* Pydantic request validation
-* HTTP 404 handling
-* HTTP 422 validation handling
-* Swagger/OpenAPI documentation
-
-### Current API
-
-```text
-GET     /
-GET     /health
-GET     /products
-GET     /products/{product_id}
-POST    /products
-PUT     /products/{product_id}
-DELETE  /products/{product_id}
-```
-
----
-
-## Milestone 3 — Automated Testing
-
-Added automated tests using **pytest** and FastAPI's test client.
-
-Test coverage includes:
-
-* Product listing
-* Product retrieval
-* Product not found
-* Product creation
-* Invalid product validation
-* Product update
-* Product deletion
-
-Current test result:
-
-```text
-7 passed
-```
-
----
-
-## Milestone 4 — PostgreSQL Setup
-
-PostgreSQL was installed and configured locally.
-
-Completed:
-
-* PostgreSQL 16 installation
-* Created `ecommerce_db` database
-* Created `ecommerce_app` application user
-* Configured password authentication
-* Configured local TCP database access
-* Granted required database/schema privileges
-* Created the `products` table
-
-### Product Database Schema
-
-```text
-products
-├── id          INTEGER PRIMARY KEY
-├── name        VARCHAR(100) NOT NULL
-├── description TEXT
-├── price       NUMERIC(10,2) NOT NULL
-└── category    VARCHAR(100) NOT NULL
-```
-
-The product ID is generated by PostgreSQL using a sequence.
-
----
-
-## Milestone 5 — Python → PostgreSQL Connectivity
-
-Added SQLAlchemy and PostgreSQL Python drivers.
-
-Installed:
-
-* SQLAlchemy
-* psycopg2-binary
-* python-dotenv
-
-Implemented:
-
-```text
-FastAPI
-   │
-   ▼
-SQLAlchemy
-   │
-   ▼
-psycopg2
-   │
-   ▼
-PostgreSQL
-```
-
-Database configuration is loaded through environment variables.
-
-Example configuration:
-
-```text
-DB_USER
-DB_PASSWORD
-DB_HOST
-DB_PORT
-DB_NAME
-```
-
-Sensitive configuration is stored in `.env`, which is excluded from Git using `.gitignore`.
-
----
-
-## Milestone 6 — SQLAlchemy Product Model
-
-Created the SQLAlchemy `Product` model.
-
-Current model mapping:
-
-```text
-Python Product Model
-        │
-        ▼
-SQLAlchemy
-        │
-        ▼
-products table
-```
-
-Verified:
-
-* SQLAlchemy model imports successfully
-* Model maps to the `products` table
-* Expected columns are present
-* SQLAlchemy can query PostgreSQL successfully
-
-Current columns:
-
-```text
-id
-name
-description
-price
-category
-```
----
-
-## Milestone 7 — PostgreSQL-Backed Product API
-
-Migrated the Product Catalog REST API from in-memory storage to PostgreSQL using SQLAlchemy.
-
-Completed:
-
-- GET `/products` using PostgreSQL
-- GET `/products/{product_id}` using PostgreSQL
-- POST `/products` using PostgreSQL
-- PUT `/products/{product_id}` using PostgreSQL
-- DELETE `/products/{product_id}` using PostgreSQL
-- PostgreSQL-generated product IDs
-- Separate API schemas (`ProductCreate`, `ProductResponse`)
-- SQLAlchemy `Product` database model
-- FastAPI database session dependency
-- Removed the old in-memory product list
-- Updated automated tests for database-backed behavior
-
-### Data Flow
-
-```text
-Client
-  │
-  ▼
-FastAPI REST API
-  │
-  ▼
-Pydantic API Schema
-  │
-  ▼
-SQLAlchemy ORM
-  │
-  ▼
-PostgreSQL
-  │
-  ▼
-products table
-```
-
-### Milestone 8 — Proper API Response Schemas
-
-Improved the Product Catalog API by adding explicit FastAPI response schemas.
-
-Changes:
-- Added `ProductResponse` Pydantic schema.
-- Added `response_model` to all Product API endpoints.
-- Ensured API responses expose only the expected product fields.
-- Added response validation through FastAPI/Pydantic.
-- Verified all CRUD endpoints continue to work.
-- Full automated test suite passes: **7 passed**.
-
-API endpoints with response schemas:
-- `GET /products`
-- `POST /products`
-- `GET /products/{product_id}`
-- `PUT /products/{product_id}`
-- `DELETE /products/{product_id}`
-
-This establishes a cleaner API contract between the Product Catalog service and its consumers.
-
-### Milestone 9 — Database Test Isolation
-
-Improved the Product Catalog automated testing setup by separating test data from the development database.
-
-Changes:
-- Created a dedicated `ecommerce_test_db` PostgreSQL database.
-- Added `pytest` database configuration through `conftest.py`.
-- Automated tests now use the dedicated test database.
-- Test tables are created automatically when the test suite starts.
-- Test data is cleaned after each test.
-- Test database tables are removed after the test session.
-- Development database remains protected from automated test data.
-- Full automated test suite passes: **7 passed**.
-
-This provides a safer and cleaner foundation for automated testing before containerization and CI/CD.
-
-
----
-
-## Milestone 10 — E-Commerce Website & Admin Dashboard
-
-Built the first complete local e-commerce application by connecting the frontend, Product Catalog API, and PostgreSQL database.
-
-### Storefront
-
-Implemented a modern dark-mode e-commerce storefront with:
-
-- Product listing
-- Product categories
-- Product search
-- Product filtering
-- Product cards
-- Shopping cart
-- Cart quantity management
-- Cart persistence using browser local storage
-- Responsive design
-- Hover effects and modern UI interactions
-- Product data loaded dynamically from the Product Catalog API
-
-### Admin Dashboard
-
-Implemented a product management dashboard with:
-
-- Product listing
-- Product count
-- Add product
-- Edit product
-- Delete product
-- Product category management
-- Product price management
-- Product description management
-- Refresh catalog
-- Success/error notifications
-- Responsive admin interface
-
-### Application Flow
-
-```text
-Browser
-   |
-   v
-Node.js Frontend
-   |
-   v
-Product Catalog API
-   |
-   v
-FastAPI
-   |
-   v
-PostgreSQL
-```
-
-## The Node.js frontend provides API proxy endpoints for the Product Catalog service.
-
-## Supported operations:
-
-- GET     /api/products
-- GET     /api/products/:id
-- POST    /api/products
-- PUT     /api/products/:id
-- DELETE  /api/products/:id
----
-
-# Current Local Application
-
-## Storefront:
-
-http://localhost:3000
-
-## Admin Dashboard:
-
-http://localhost:3000/admin.html
-
-## Product Catalog API:
-
-http://localhost:8000
-
-## Swagger API Documentation:
-
-http://localhost:8000/docs
-
----
-
-## Milestone 11 — Docker Containerization & PostgreSQL Networking
-
-Containerized the Product Catalog service and PostgreSQL database using Docker.
-
-### Product Catalog Container
-
-Implemented a Docker image for the Product Catalog service using:
-
-* Python 3.12 slim base image
-* FastAPI
-* Uvicorn
-* SQLAlchemy
-* PostgreSQL driver
-* Environment-based database configuration
-* Port 8000 exposed by the container
-
-Docker image:
-
-```text
-devops-ecommerce-product-service:v1
-```
-
-### PostgreSQL Container
-
-Created a PostgreSQL 16 container with:
-
-* PostgreSQL 16
-* Dedicated Docker volume for persistent database storage
-* `ecommerce_db` database
-* `ecommerce_app` database user
-
-Docker volume:
-
-```text
-postgres-data
-```
-
-### Docker Networking
-
-Created a dedicated Docker bridge network:
-
-```text
-ecommerce-network
-```
-
-Connected the Product Catalog service and PostgreSQL containers to the same network.
-
-The Product Catalog service connects to PostgreSQL using the Docker service name:
-
-```text
-DB_HOST=postgres
-```
-
-Docker's internal DNS resolves:
-
-```text
-postgres → PostgreSQL container
-```
-
-### Application Flow
-
-```text
-Browser
-   |
-   v
-Host Port 8000
-   |
-   v
-Product Service Container
-   |
-   | Docker Network
-   v
-PostgreSQL Container
-   |
-   v
-postgres-data volume
-```
-
-### Verification
-
-Successfully verified:
-
-* Product Catalog container starts successfully
-* PostgreSQL container starts successfully
-* Docker DNS resolves the PostgreSQL container
-* Product Service connects to PostgreSQL over the Docker network
-* Existing product database was restored into the PostgreSQL container
-* Product API successfully returns all 35 products
-* `/health` endpoint returns healthy status
-
-This milestone demonstrates container-to-container communication, Docker networking, persistent volumes and database-backed application deployment.
-
----
-
-## Milestone 12 — Docker Compose
-
-Replaced the manually created Docker containers with Docker Compose to define and manage the Product Catalog service and PostgreSQL database as a single application stack.
-
-### Docker Compose Configuration
-
-Created a `compose.yaml` file defining:
-
-* Product Catalog service
-* PostgreSQL 16 database
-* Docker network
-* Persistent PostgreSQL volume
-* Environment-based database configuration
-* Product Service port mapping
-* Service dependency using `depends_on`
-
-### Environment Configuration
-
-Database credentials and connection settings are stored in the local `.env` file instead of being hardcoded in `compose.yaml`.
-
-The `.env` file is excluded from Git using `.gitignore`.
-
-Compose reads the following variables:
-
-```text
-DB_USER
-DB_PASSWORD
-DB_NAME
-DB_HOST
-DB_PORT
-```
-
-The Product Service connects to PostgreSQL using:
-
-```text
-DB_HOST=postgres
-```
-
-### Persistent Storage
-
-Configured PostgreSQL to use the existing external Docker volume:
-
-```text
-postgres-data
-```
-
-This ensures that PostgreSQL data persists even when the containers are removed and recreated.
-
-### Docker Network
-
-Docker Compose creates a dedicated network for communication between the services:
-
-```text
-devops-ecommerce_ecommerce-network
-```
-
-The Product Service communicates with PostgreSQL through the Docker service name:
-
-```text
-product-service
-      |
-      | Docker Network
-      v
-postgres
-```
-
-PostgreSQL port `5432` is kept internal and is not exposed to the host.
-
-### Compose Application Flow
-
-```text
-compose.yaml
-      |
-      ├── Product Service
-      |       |
-      |       v
-      |   FastAPI
-      |       |
-      |       | Docker Network
-      |       v
-      |   PostgreSQL
-      |       |
-      |       v
-      |   postgres-data
-      |
-      └── Port 8000
-              |
-              v
-        Host / Browser
-```
-
-### Verification
-
-Successfully verified:
-
-* `docker compose config` validates the Compose configuration
-* Environment variables are loaded from `.env`
-* Product Service container starts successfully
-* PostgreSQL container starts successfully
-* Docker Compose creates the application network
-* Existing `postgres-data` volume is reused
-* PostgreSQL data remains persistent
-* Product Service connects to PostgreSQL using Docker DNS
-* PostgreSQL port `5432` remains internal
-* Product API successfully returns all 35 products
-* Unused duplicate Compose volume was safely removed
-
-This milestone demonstrates declarative container orchestration using Docker Compose, environment-based configuration, persistent storage, service discovery and multi-container application management.
-
----
-
-# Milestone 13 — Full Docker Compose Stack
-
-## Overview
-
-Completed the Docker Compose integration for the e-commerce application by adding the **Frontend service** to the existing PostgreSQL and Product Catalog services.
-
-The complete local application stack now runs using Docker Compose.
-
-## Architecture
-
-```text
-                    Docker Compose
-                         │
-        ┌────────────────┼────────────────┐
-        │                │                │
-        ▼                ▼                ▼
-    Frontend       Product Service     PostgreSQL
-     :3000              :8000             :5432
-        │                │
-        │                │
-        └── HTTP ────────┘
-             Docker DNS
-        product-service:8000
-```
-
-All services communicate through the Docker Compose network:
-
-```text
-devops-ecommerce_ecommerce-network
-```
-
-## Frontend Service
-
-The frontend is built using **Node.js + Express**.
-
-Dockerfile:
-
-```text
-services/frontend/Dockerfile
-```
-
-The Docker image is built from:
-
-```text
-node:22-slim
-```
-
-The container exposes:
-
-```text
-3000
-```
-
-Docker Compose publishes:
-
-```text
-Host 3000 → Container 3000
-```
-
-## Product Service Communication
-
-The frontend does not use `localhost` to communicate with the Product Service.
-
-Instead, Docker Compose service-name DNS is used:
-
-```text
-PRODUCT_SERVICE_URL=http://product-service:8000
-```
-
-This allows the frontend container to communicate directly with the Product Service container over the Compose network.
-
-## PostgreSQL
-
-PostgreSQL continues to use the existing external Docker volume:
-
-```text
-postgres-data
-```
-
-This ensures the existing product data is preserved when containers are recreated.
-
-The Product Service connects to PostgreSQL using the Docker service name:
-
-```text
-DB_HOST=postgres
-```
-
-## Docker Compose Configuration
-
-The Compose stack now contains three services:
-
-```text
-postgres
-product-service
-frontend
-```
-
-The services are connected to:
-
-```text
-ecommerce-network
-```
-
-Compose creates the project-scoped network:
-
-```text
-devops-ecommerce_ecommerce-network
-```
-
-## Verification
-
-The complete request path was successfully tested:
-
-```text
-Browser
-   ↓
-Frontend :3000
-   ↓
-Product Service :8000
-   ↓
-PostgreSQL :5432
-```
-
-The following API request successfully returned all **35 products**:
+## Health Check
 
 ```bash
-curl http://localhost:3000/api/products
+curl http://localhost:8000/health
 ```
 
-This verified:
+Expected response:
 
-* Frontend container is running.
-* Frontend port `3000` is accessible.
-* Frontend can resolve `product-service` through Docker DNS.
-* Frontend can communicate with Product Service.
-* Product Service can communicate with PostgreSQL.
-* Existing PostgreSQL data is available.
+```json
+{
+  "status": "healthy"
+}
+```
 
-## Troubleshooting Performed
+---
 
-During testing, the frontend initially failed to communicate with the Product Service.
+# Product APIs
 
-Investigation showed that the frontend and Product Service were attached to different Docker networks.
-
-Network inspection was performed using:
+## Get All Products
 
 ```bash
-docker network inspect ecommerce-network
+curl http://localhost:8000/products
 ```
 
-and:
+---
+
+## Get Product
 
 ```bash
-docker inspect product-service
-```
-
-The frontend was then tested against the correct Compose network.
-
-A temporary frontend container was subsequently removed and recreated through Docker Compose, which resulted in the correct network attachment and successful communication.
-
-## Key DevOps Learning
-
-### Container-to-container communication
-
-Inside Docker Compose, containers should communicate using **service names**, not host `localhost`.
-
-Incorrect:
-
-```text
-http://localhost:8000
-```
-
-Correct:
-
-```text
-http://product-service:8000
-```
-
-Similarly, the Product Service connects to PostgreSQL using:
-
-```text
-postgres:5432
-```
-
-rather than:
-
-```text
-localhost:5432
-```
-
-# The Architecture Built:
-
-```text
-                         Ubuntu VM
-                            │
-                         Docker
-                            │
-             ┌──────────────┴──────────────┐
-             │     Docker Compose          │
-             │                             │
-             │   ecommerce-network         │
-             │                             │
-             │  ┌───────────────┐          │
-Browser ────►│  │   Frontend    │          │
-localhost    │  │     :3000     │          │
-:3000        │  └───────┬───────┘          │
-             │          │                  │
-             │          │ product-service  │
-             │          │ :8000            │
-             │          ▼                  │
-             │  ┌───────────────┐          │
-             │  │    Product    │          │
-             │  │    Service    │          │
-             │  │     :8000     │          │
-             │  └───────┬───────┘          │
-             │          │                  │
-             │          │ postgres:5432    │
-             │          ▼                  │
-             │  ┌───────────────┐          │
-             │  │  PostgreSQL   │          │
-             │  │     :5432     │          │
-             │  └───────┬───────┘          │
-             │          │                  │
-             └──────────┼──────────────────┘
-                        ▼
-                 postgres-data
-                    volume
-
-```
-
-## Files Added/Updated
-
-```text
-compose.yaml
-services/frontend/Dockerfile
-```
-
-## Git Milestone
-
-**Milestone 13: Complete Docker Compose frontend integration**
-
-Commit:
-
-```text
-Complete Docker Compose frontend integration
-```
-
-Changes were committed and pushed to the GitHub `main` branch.
-
-## Current Status
-
-The project has progressed from a basic FastAPI service to a complete local Docker + Kubernetes deployment.
-
-### Completed
-
-* [x] Git repository
-* [x] GitHub repository
-* [x] Project structure
-* [x] README
-* [x] Python Product Catalog microservice
-* [x] REST API
-* [x] CRUD operations
-* [x] Pydantic validation
-* [x] Automated tests
-* [x] PostgreSQL installation
-* [x] PostgreSQL database
-* [x] Product database table
-* [x] SQLAlchemy
-* [x] Environment-based database configuration
-* [x] SQLAlchemy Product model
-* [x] Python → SQLAlchemy → PostgreSQL connectivity
-* [x] PostgreSQL-backed Product API
-* [x] Database test isolation/fixtures
-* [x] Product Catalog containerization
-* [x] Docker Compose
-* [x] Frontend containerization
-* [x] Frontend → Product Service communication
-* [x] Kubernetes/Minikube deployment
-* [x] Kubernetes PostgreSQL persistent storage
-* [x] Product Service Kubernetes Deployment and Service
-* [x] Frontend Kubernetes Deployment and Service
-* [x] NGINX Ingress
-* [x] Product database backup and restore into Kubernetes PostgreSQL
-* [x] 35 existing products verified in Kubernetes PostgreSQL
-* [x] Kubernetes resource requests and limits
-* [x] Docker images pushed to Docker Hub
-* [x] Complete local Kubernetes application verified end to end
-
-### Current Milestone
-
-**Milestone 14 — Local Kubernetes Deployment**
-
-The complete application is now running locally on Minikube:
-
-```text
-Browser
-   │
-   ▼
-NGINX Ingress
-   │
-   ▼
-Frontend Service
-   │
-   ▼
-Frontend Pod
-   │
-   ▼
-Product Service
-   │
-   ▼
-PostgreSQL
-   │
-   ▼
-Persistent Storage
-```
-
-The storefront renders successfully and the frontend can retrieve the 35 products from the Product Catalog service.
-
-### Next Milestone
-
-**Milestone 15 — Redis**
-
-# Redis Caching
-
-This project uses **Redis** to cache product data and reduce repeated database queries.
-
-## Architecture
-
-```text
-Frontend
-   |
-   v
-Product Service
-   |
-   +------> Redis
-   |          |
-   |          +-- products
-   |          +-- product:<id>
-   |
-   +------> PostgreSQL
-```
-
-Redis is used as a **cache**, while PostgreSQL remains the main database.
-
-## Redis Configuration
-
-Redis is deployed inside Kubernetes using Helm.
-
-### Redis Image
-
-```yaml
-redis:
-  replicas: 1
-
-  image:
-    repository: redis
-    tag: "7"
-```
-
-### Resources
-
-```yaml
-resources:
-  requests:
-    cpu: "100m"
-    memory: "128Mi"
-
-  limits:
-    cpu: "250m"
-    memory: "256Mi"
-```
-
-## Kubernetes Resources
-
-The Helm chart creates:
-
-* Redis Deployment
-* Redis ClusterIP Service
-
-Redis is available inside the `ecommerce` namespace at:
-
-```text
-redis:6379
-```
-
-The Product Service receives:
-
-```yaml
-- name: REDIS_HOST
-  value: redis
-
-- name: REDIS_PORT
-  value: "6379"
-```
-
-## Product List Cache
-
-The endpoint:
-
-```text
-GET /products
-```
-
-uses the Redis key:
-
-```text
-products
-```
-
-Flow:
-
-```text
-GET /products
-      |
-      v
-Check Redis
-      |
-   +--+--+
-   |     |
- HIT    MISS
-   |     |
-   |     v
-   |  PostgreSQL
-   |     |
-   |     v
-   |  Store in Redis
-   |     |
-   +-----+
-      |
-      v
-   Response
-```
-
-The cache expires after **60 seconds**.
-
-```python
-redis_client.set(
-    cache_key,
-    json.dumps(products_data),
-    ex=60
-)
-```
-
-## Individual Product Cache
-
-The endpoint:
-
-```text
-GET /products/{product_id}
-```
-
-uses a separate Redis key:
-
-```text
-product:<product_id>
+curl http://localhost:8000/products/1
 ```
 
 Example:
 
-```text
-product:1
-product:2
-product:3
-```
-
-This allows individual products to be cached separately.
-
-The cache also expires after **60 seconds**.
-
-## Cache Invalidation
-
-When product data changes, the related cache is deleted.
-
-### Create Product
-
-When a new product is created:
-
-```python
-redis_client.delete("products")
-```
-
-This clears the product list cache.
-
-### Update Product
-
-When a product is updated:
-
-```python
-redis_client.delete("products")
-redis_client.delete(f"product:{product_id}")
-```
-
-Both the product list and individual product cache are cleared.
-
-### Delete Product
-
-When a product is deleted:
-
-```python
-redis_client.delete("products")
-redis_client.delete(f"product:{product_id}")
-```
-
-Again, both caches are cleared.
-
-## Why Cache Invalidation Is Needed
-
-Without invalidation, Redis could return old product information.
-
-Example:
-
-```text
-PostgreSQL
-Product 1 price = 100
-
-Redis
-Product 1 price = 100
-```
-
-If the price changes:
-
-```text
-PostgreSQL
-Product 1 price = 150
-```
-
-but Redis still contains:
-
-```text
-Product 1 price = 100
-```
-
-the application could return stale data.
-
-Therefore, the application deletes the affected cache whenever product data changes.
-
-## Verify Redis
-
-Check Redis pod:
-
-```bash
-kubectl get pods -n ecommerce
-```
-
-Check Redis service:
-
-```bash
-kubectl get service redis -n ecommerce
-```
-
-Check the product list cache:
-
-```bash
-kubectl exec -n ecommerce deployment/redis -- \
-  redis-cli EXISTS products
-```
-
-Check an individual product cache:
-
-```bash
-kubectl exec -n ecommerce deployment/redis -- \
-  redis-cli EXISTS product:1
-```
-
-View the cached product:
-
-```bash
-kubectl exec -n ecommerce deployment/redis -- \
-  redis-cli GET product:1
-```
-
-View the product list cache:
-
-```bash
-kubectl exec -n ecommerce deployment/redis -- \
-  redis-cli GET products
-```
-
-Check TTL:
-
-```bash
-kubectl exec -n ecommerce deployment/redis -- \
-  redis-cli TTL products
-```
-
-## Current Implementation
-
-Currently Redis caching is implemented for the **Product Service**:
-
-```text
-GET /products
-GET /products/{product_id}
-```
-
-The cache is not currently applied to every service or every API in the application.
-
-## Deployment
-
-Redis is managed by the ecommerce Helm chart:
-
-```text
-infrastructure/helm/ecommerce/
-├── templates/
-│   ├── redis-deployment.yaml
-│   └── redis-service.yaml
-└── values.yaml
-```
-
-Validate the chart:
-
-```bash
-helm lint infrastructure/helm/ecommerce
-```
-
-Render the Kubernetes manifests:
-
-```bash
-helm template ecommerce infrastructure/helm/ecommerce
-```
-
-Upgrade the deployment:
-
-```bash
-helm upgrade ecommerce infrastructure/helm/ecommerce -n ecommerce
-```
-
-Check the Helm release:
-
-```bash
-helm list -n ecommerce
-```
-
-## Result
-
-The current architecture is:
-
-```text
-Frontend
-   |
-   v
-Product Service
-   |
-   +---- Redis
-   |       |
-   |       +-- products
-   |       +-- product:<id>
-   |
-   +---- PostgreSQL
-```
-
-**PostgreSQL = source of truth**
-
-**Redis = temporary cache**
-
-**Product Service = decides when to read/write/delete cache**
-
----
-
-# Complete Project Roadmap
-
-The project follows the agreed progression:
-
-```text
-LOCAL DEVELOPMENT
-        │
-        ▼
-Docker / Docker Compose
-        │
-        ▼
-Kubernetes / Minikube
-        │
-        ▼
-Redis
-        │
-        ▼
-Kafka
-        │
-        ▼
-gRPC
-        │
-        ▼
-Java / Spring Boot
-        │
-        ▼
-Helm
-        │
-        ▼
-GitHub Actions
-        │
-        ▼
-Terraform
-        │
-        ▼
-AWS
-        │
-        ▼
-EKS
-        │
-        ▼
-Argo CD
-        │
-        ▼
-GitOps
-```
-
-Each major stage will be implemented, tested and verified before moving to the next stage.
-
-## Phase 1 — Local Application Foundation
-
-- [x] FastAPI Product Catalog service
-- [x] PostgreSQL
-- [x] SQLAlchemy
-- [x] REST CRUD API
-- [x] Node.js/Express frontend
-- [x] Docker
-- [x] Docker Compose
-- [x] Kubernetes/Minikube
-- [x] Kubernetes persistent storage
-- [x] NGINX Ingress
-
-## Phase 2 — Redis
-
-- [ ] Deploy Redis locally
-- [ ] Integrate Redis with the Product Catalog service
-- [ ] Implement product caching
-- [ ] Test cache hit/miss behavior
-- [ ] Add Redis Kubernetes configuration
-- [ ] Verify Redis service communication
-
-## Phase 3 — Apache Kafka
-
-- [ ] Deploy Kafka locally
-- [ ] Learn brokers, topics, partitions and consumers
-- [ ] Create product-related events
-- [ ] Implement producer/consumer flow
-- [ ] Test event-driven communication
-- [ ] Deploy Kafka components to Kubernetes
-
-## Phase 4 — gRPC
-
-- [ ] Define protobuf contracts
-- [ ] Generate client/server code
-- [ ] Build a selected internal gRPC API
-- [ ] Test REST and gRPC communication
-- [ ] Integrate gRPC with Kubernetes services
-
-## Phase 5 — Java / Spring Boot
-
-- [ ] Build a Java/Spring Boot microservice
-- [ ] Add REST endpoints
-- [ ] Connect Spring Boot to PostgreSQL
-- [ ] Integrate it with existing services
-- [ ] Add selected gRPC communication
-- [ ] Containerize the Spring Boot service
-- [ ] Deploy it to Kubernetes
-
-## Phase 6 — Helm
-
-- [ ] Learn Helm charts
-- [ ] Convert Kubernetes manifests into Helm templates
-- [ ] Create `values.yaml`
-- [ ] Parameterize images, replicas, resources and service settings
-- [ ] Install and upgrade the application using Helm
-- [ ] Test Helm rollback
-- [ ] Validate the complete application locally through Helm
-
-## Phase 7 — GitHub Actions
-
-- [ ] Create CI workflow
-- [ ] Run automated tests
-- [ ] Validate application configuration
-- [ ] Build Docker images
-- [ ] Push images to Docker Hub initially
-- [ ] Prepare the workflow for AWS/ECR
-
-## Phase 8 — Terraform
-
-- [ ] Learn Terraform fundamentals
-- [ ] Providers, resources, variables and outputs
-- [ ] Terraform state
-- [ ] Modules
-- [ ] AWS networking infrastructure
-- [ ] IAM infrastructure
-- [ ] EKS infrastructure as code
-
-## Phase 9 — AWS / EKS
-
-- [ ] Create AWS networking
-- [ ] Create IAM roles and policies
-- [ ] Create EKS cluster
-- [ ] Configure EKS worker/node infrastructure
-- [ ] Create ECR repositories
-- [ ] Push application images to ECR
-- [ ] Deploy the application to EKS
-- [ ] Validate networking, storage and service communication
-
-## Phase 10 — Argo CD / GitOps
-
-- [ ] Install Argo CD
-- [ ] Connect Argo CD to GitHub
-- [ ] Store deployment configuration in Git
-- [ ] Configure Helm-based application deployment
-- [ ] Configure Argo CD synchronization
-- [ ] Deploy the application to EKS using GitOps
-- [ ] Test Git commit → Argo CD sync → EKS deployment
-
-## Phase 11 — Final CI/CD + GitOps
-
-Final target flow:
-
-```text
-Developer
-    │
-    ▼
-GitHub
-    │
-    ▼
-GitHub Actions
-    │
-    ├── Test
-    ├── Build
-    ├── Docker Image
-    └── Push Image → ECR
-                         │
-                         ▼
-                        AWS
-                         │
-                         ▼
-                        EKS
-                         │
-                         ▼
-                       Argo CD
-                         │
-                         ▼
-                       Helm
-                         │
-                         ▼
-                      GitOps
-```
-
-### Responsibility split
-
-```text
-GitHub Actions
-    → CI
-    → Test
-    → Build
-    → Publish container images
-
-Argo CD
-    → CD
-    → GitOps
-    → Kubernetes desired-state synchronization
-    → Deploy to EKS
-```
-
-This project will use **GitHub Actions instead of GitHub Actions**.
-
----
-
-# Milestone Sequence
-
-```text
-01  Project Foundation                        ✅
-02  Product Catalog Service                   ✅
-03  Automated Testing                         ✅
-04  PostgreSQL Setup                          ✅
-05  Python → PostgreSQL Connectivity          ✅
-06  SQLAlchemy Product Model                  ✅
-07  PostgreSQL-Backed Product API             ✅
-08  API Response Schemas                      ✅
-09  Database Test Isolation                   ✅
-10  E-Commerce Website & Admin Dashboard      ✅
-11  Docker Containerization                   ✅
-12  Docker Compose                            ✅
-13  Full Docker Compose Stack                 ✅
-14  Kubernetes / Minikube                     ✅
-15  Redis                                     ✅
-16  Kafka                                     ⏳
-17  gRPC                                      ⏳
-18  Java / Spring Boot                        ⏳
-19  Helm                                      ⏳
-20  GitHub Actions                            ⏳
-21  Terraform                                 ⏳
-22  AWS                                       ⏳
-23  EKS                                       ⏳
-24  Argo CD                                   ⏳
-25  GitOps                                    ⏳
-26  Final CI/CD + GitOps Architecture         ⏳
+```json
+{
+  "id": 1,
+  "name": "ProBook X1 Laptop",
+  "description": "14-inch business laptop with high-performance processor and 16GB RAM.",
+  "price": 74999.0,
+  "category": "Laptops"
+}
 ```
 
 ---
 
-# Important Project Rule
+## Create Product
 
-The project will **not jump directly to AWS**.
-
-We will first make the application complete and stable locally:
-
-```text
-Application
-   ↓
-Redis
-   ↓
-Kafka
-   ↓
-gRPC
-   ↓
-Java/Spring Boot
-   ↓
-Helm
-   ↓
-Local Kubernetes validation
+```bash
+curl -X POST http://localhost:8000/products \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Test Laptop",
+    "description": "Test product",
+    "price": 50000,
+    "category": "Laptops"
+  }'
 ```
-
-Only after the local stack is working will we move to:
-
-```text
-Terraform
-   ↓
-AWS
-   ↓
-EKS
-   ↓
-ECR
-   ↓
-Argo CD
-   ↓
-GitOps
-```
-
-This keeps the project practical and ensures that every technology is understood before it becomes part of the cloud architecture.
 
 ---
 
-# Development Philosophy
+## Update Product
 
-Each major implementation stage is:
+```bash
+curl -X PUT http://localhost:8000/products/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Laptop",
+    "description": "Updated product",
+    "price": 55000,
+    "category": "Laptops"
+  }'
+```
 
-1. Built locally
-2. Tested
-3. Verified
-4. Documented
-5. Committed to Git
-6. Pushed to GitHub
+---
 
-This provides a complete history of the project's evolution and makes the repository easier to understand, review and use as a technical portfolio project.
+## Delete Product
+
+```bash
+curl -X DELETE http://localhost:8000/products/1
+```
 
 ---
 
 # Local Development
 
-The project currently runs locally on Ubuntu.
+The project uses a Python virtual environment for application development.
 
-Python development uses the project's virtual environment:
+Activate the environment:
 
-```text
-.venv/
+```bash
+source .venv/bin/activate
 ```
 
-Product Catalog API:
+Check Python:
 
-```text
-http://127.0.0.1:8000
+```bash
+python --version
 ```
 
-Swagger API documentation:
+Check installed packages:
 
-```text
-http://127.0.0.1:8000/docs
+```bash
+pip list
 ```
 
 ---
 
-# Git Milestones
+# Running the Application Locally
 
-Major project changes are committed separately so the development history clearly reflects the implementation stages.
+Start the FastAPI application:
 
-Examples:
-
-```text
-Initial Project Setup
-Add project README.md
-Add initial Product Catalog service
-Add product catalog GET endpoints
-Add product service automated tests
-Add Product Catalog CRUD operations
-Add PostgreSQL connectivity
-Add SQLAlchemy product model
+```bash
+uvicorn services.product_service.app.main:app \
+  --host 0.0.0.0 \
+  --port 8000
 ```
 
-Future milestones will continue to be committed and pushed as the project evolves.
+The application will be available at:
+
+```text
+http://localhost:8000
+```
+
+FastAPI documentation:
+
+```text
+http://localhost:8000/docs
+```
+
+---
+
+# Docker
+
+The application is containerized using Docker.
+
+Build the image:
+
+```bash
+docker build \
+  -t devops-product-service:v1 \
+  services/product_service
+```
+
+Check the image:
+
+```bash
+docker images
+```
+
+Run the container:
+
+```bash
+docker run -d \
+  --name product-service \
+  -p 8000:8000 \
+  devops-product-service:v1
+```
+
+Check the container:
+
+```bash
+docker ps
+```
+
+Check logs:
+
+```bash
+docker logs product-service
+```
+
+Stop the container:
+
+```bash
+docker stop product-service
+```
+
+Remove the container:
+
+```bash
+docker rm product-service
+```
+
+---
+
+# Docker Compose
+
+Docker Compose will be used to run the complete local application stack.
+
+Expected architecture:
+
+```text
+                Docker Compose
+                     │
+        ┌────────────┼────────────┐
+        │            │            │
+        ▼            ▼            ▼
+    Frontend    Product API   PostgreSQL
+                     │
+                     ├──────── Redis
+                     │
+                     └──────── Kafka
+```
+
+Start the complete stack:
+
+```bash
+docker compose up -d
+```
+
+Check services:
+
+```bash
+docker compose ps
+```
+
+View logs:
+
+```bash
+docker compose logs
+```
+
+View logs for one service:
+
+```bash
+docker compose logs product-service
+```
+
+Stop the stack:
+
+```bash
+docker compose down
+```
+
+---
+
+# Kubernetes
+
+After Docker works correctly, the application will be deployed to Kubernetes.
+
+The local Kubernetes environment is:
+
+```text
+Minikube
+```
+
+Start Minikube:
+
+```bash
+minikube start
+```
+
+Check cluster:
+
+```bash
+kubectl get nodes
+```
+
+Expected:
+
+```text
+NAME       STATUS   ROLES           AGE
+minikube   Ready    control-plane   ...
+```
+
+---
+
+# Kubernetes Namespace
+
+The application runs inside the:
+
+```text
+ecommerce
+```
+
+namespace.
+
+Create the namespace:
+
+```bash
+kubectl create namespace ecommerce
+```
+
+Check namespaces:
+
+```bash
+kubectl get namespaces
+```
+
+---
+
+# Kubernetes Deployment
+
+The application is deployed using Kubernetes manifests.
+
+Typical resources include:
+
+```text
+Deployment
+Service
+ConfigMap
+Secret
+PersistentVolume
+PersistentVolumeClaim
+```
+
+Apply Kubernetes manifests:
+
+```bash
+kubectl apply -f kubernetes/
+```
+
+Check deployments:
+
+```bash
+kubectl -n ecommerce get deployments
+```
+
+Check pods:
+
+```bash
+kubectl -n ecommerce get pods
+```
+
+Check services:
+
+```bash
+kubectl -n ecommerce get svc
+```
+
+---
+
+# Kubernetes Troubleshooting Commands
+
+Check pod details:
+
+```bash
+kubectl -n ecommerce describe pod <pod-name>
+```
+
+View logs:
+
+```bash
+kubectl -n ecommerce logs <pod-name>
+```
+
+Follow logs:
+
+```bash
+kubectl -n ecommerce logs -f <pod-name>
+```
+
+Check deployment:
+
+```bash
+kubectl -n ecommerce describe deployment <deployment-name>
+```
+
+Check events:
+
+```bash
+kubectl -n ecommerce get events
+```
+
+Execute a command inside a container:
+
+```bash
+kubectl -n ecommerce exec -it <pod-name> -- sh
+```
+
+---
+
+# Kubernetes Port Forwarding
+
+For local testing:
+
+```bash
+kubectl -n ecommerce port-forward \
+  svc/product-service 8000:8000
+```
+
+Test:
+
+```bash
+curl http://localhost:8000/health
+```
+
+---
+
+# Helm
+
+Helm will be used to package the Kubernetes application.
+
+Instead of maintaining many individual Kubernetes commands, Helm will provide a reusable deployment package.
+
+Expected structure:
+
+```text
+helm/
+└── ecommerce/
+    ├── Chart.yaml
+    ├── values.yaml
+    └── templates/
+        ├── deployment.yaml
+        ├── service.yaml
+        ├── configmap.yaml
+        └── secret.yaml
+```
+
+Install the application:
+
+```bash
+helm install ecommerce ./helm/ecommerce \
+  -n ecommerce
+```
+
+Check Helm releases:
+
+```bash
+helm list -n ecommerce
+```
+
+Upgrade:
+
+```bash
+helm upgrade ecommerce ./helm/ecommerce \
+  -n ecommerce
+```
+
+Uninstall:
+
+```bash
+helm uninstall ecommerce -n ecommerce
+```
+
+---
+
+# Kafka
+
+Kafka is used for application events.
+
+The current event flow is:
+
+```text
+Product Service
+      │
+      │ Product Created
+      ▼
+Kafka Topic
+product-events
+      │
+      ▼
+Consumer
+```
+
+Create the topic:
+
+```bash
+kafka-topics.sh \
+  --bootstrap-server kafka:9094 \
+  --create \
+  --topic product-events \
+  --partitions 1 \
+  --replication-factor 1
+```
+
+List topics:
+
+```bash
+kafka-topics.sh \
+  --bootstrap-server kafka:9094 \
+  --list
+```
+
+Kafka will be managed as part of the Kubernetes environment.
+
+---
+
+# Redis
+
+Redis is used as a cache for product data.
+
+The application caches:
+
+```text
+products
+product:<id>
+```
+
+The cache has a short expiration time.
+
+When product data changes, the relevant cache is cleared.
+
+This provides practical experience with:
+
+* Application caching
+* Cache invalidation
+* Redis
+* Kubernetes service discovery
+
+---
+
+# PostgreSQL
+
+PostgreSQL is the primary database for the application.
+
+The application stores product information such as:
+
+```text
+ID
+Name
+Description
+Price
+Category
+```
+
+Database configuration is provided to the application through environment variables and Kubernetes configuration.
+
+---
+
+# Terraform
+
+Terraform will be used for Infrastructure as Code.
+
+The project will first use Terraform for local infrastructure and then move toward AWS infrastructure.
+
+Planned AWS infrastructure includes:
+
+```text
+VPC
+├── Public Subnets
+├── Private Subnets
+├── Security Groups
+├── Internet Gateway
+├── NAT Gateway
+└── Compute / Kubernetes infrastructure
+```
+
+Typical Terraform workflow:
+
+```bash
+terraform init
+```
+
+```bash
+terraform validate
+```
+
+```bash
+terraform plan
+```
+
+```bash
+terraform apply
+```
+
+Destroy test infrastructure when required:
+
+```bash
+terraform destroy
+```
+
+---
+
+# Ansible
+
+Ansible will be used for configuration management and server automation.
+
+Planned tasks include:
+
+* Server configuration
+* Package installation
+* User management
+* Service configuration
+* Application configuration
+* Basic security configuration
+
+Typical workflow:
+
+```bash
+ansible-playbook -i inventory site.yml
+```
+
+---
+
+# CI/CD
+
+GitHub Actions will be used to automate the application delivery process.
+
+Planned pipeline:
+
+```text
+Git Push
+   ↓
+GitHub Actions
+   ↓
+Checkout Code
+   ↓
+Run Tests
+   ↓
+Build Docker Image
+   ↓
+Tag Image
+   ↓
+Push Image
+   ↓
+Deploy to Kubernetes
+   ↓
+Verify Deployment
+```
+
+The goal is to remove manual deployment steps.
+
+---
+
+# AWS Deployment
+
+Once the application is working correctly on the local Kubernetes cluster, it will be deployed to AWS.
+
+The AWS architecture will be introduced gradually.
+
+Planned components include:
+
+```text
+AWS
+│
+├── VPC
+│
+├── Subnets
+│
+├── Security Groups
+│
+├── IAM
+│
+├── Compute
+│
+├── Container Registry
+│
+└── Kubernetes
+```
+
+The exact AWS services will be selected as the project progresses.
+
+The important objective is to understand:
+
+```text
+Local Kubernetes
+       ↓
+AWS Infrastructure
+       ↓
+AWS Kubernetes / Containers
+       ↓
+Production-style Deployment
+```
+
+---
+
+# Monitoring
+
+Monitoring will be added after the application and deployment pipeline are stable.
+
+Planned monitoring areas:
+
+### Application
+
+* HTTP health
+* Request failures
+* Response time
+* Application errors
+
+### Kubernetes
+
+* Pod status
+* Pod restarts
+* CPU usage
+* Memory usage
+* Deployment status
+
+### Infrastructure
+
+* CPU
+* Memory
+* Disk
+* Network
+
+Planned tools:
+
+```text
+Prometheus
+Grafana
+```
+
+---
+
+# Logging
+
+Application and infrastructure logs will be collected and investigated during troubleshooting.
+
+Important commands:
+
+```bash
+kubectl logs
+```
+
+```bash
+kubectl describe
+```
+
+```bash
+kubectl get events
+```
+
+The objective is to understand how to troubleshoot an application running inside containers and Kubernetes.
+
+---
+
+# Git Workflow
+
+Git is used for version control.
+
+Check repository status:
+
+```bash
+git status
+```
+
+Check changes:
+
+```bash
+git diff
+```
+
+Add changes:
+
+```bash
+git add .
+```
+
+Commit:
+
+```bash
+git commit -m "Update application"
+```
+
+Push:
+
+```bash
+git push
+```
+
+Check history:
+
+```bash
+git log --oneline
+```
+
+The `main` branch represents the stable project state.
+
+---
+
+# Project Development Approach
+
+The project will be developed in small stages.
+
+Each stage must work before moving to the next stage.
+
+```text
+   Stage 1
+   Application
+       ↓
+   Stage 2
+   Database
+       ↓
+   Stage 3
+   Redis
+       ↓
+   Stage 4
+   Kafka
+       ↓
+   Stage 5
+   Docker
+       ↓
+   Stage 6
+   Docker Compose
+       ↓
+   Stage 7
+   Kubernetes
+       ↓
+   Stage 8
+   Helm
+       ↓
+   Stage 9
+   GitHub Actions / CI/CD
+       ↓
+   Stage 10
+   Terraform
+       ↓
+   Stage 11
+   AWS
+       ↓
+   Stage 12
+   Monitoring
+```
+
+The application should remain simple while the infrastructure becomes progressively more realistic.
+
+---
+
+# Completed
+
+## Application
+
+* [x] FastAPI application created
+* [x] Product API created
+* [x] Product CRUD operations implemented
+* [x] PostgreSQL integration
+* [x] Redis integration
+* [x] Health endpoint
+* [x] Kafka producer integration
+* [x] Kafka topic created
+* [x] Kafka event successfully published
+* [x] Kafka event successfully consumed
+* [x] Application tested locally
+
+## Docker
+
+* [x] Product service Dockerfile
+* [x] Docker image created
+* [x] Containerized application tested
+
+## Kubernetes
+
+* [x] Minikube environment
+* [x] Ecommerce namespace
+* [x] Product service deployed
+* [x] PostgreSQL deployed
+* [x] Redis deployed
+* [x] Kafka deployed
+* [x] Kubernetes Services configured
+* [x] Internal service communication tested
+* [x] Product API tested through Kubernetes
+
+## Helm
+
+* [ ] Helm chart completed
+* [ ] Helm deployment tested
+* [ ] Helm upgrade tested
+* [ ] Helm rollback tested
+
+---
+
+# Current Status
+
+The application is currently running successfully in the local Kubernetes environment.
+
+Current architecture:
+
+```text
+                 Kubernetes
+                 Minikube
+                    │
+        ┌───────────┼────────────┐
+        │           │            │
+        ▼           ▼            ▼
+   Product API   PostgreSQL    Redis
+        │
+        │
+        ▼
+      Kafka
+        │
+        ▼
+ product-events
+```
+
+The next major objective is to make the Kubernetes deployment clean and repeatable using Helm.
+
+---
+
+# Next Steps
+
+## Step 1 — Finish Helm
+
+Create a proper Helm chart for the application.
+
+Tasks:
+
+* [ ] Create Helm chart
+* [ ] Move Kubernetes configuration into Helm templates
+* [ ] Create `values.yaml`
+* [ ] Deploy using Helm
+* [ ] Test Helm upgrade
+* [ ] Test Helm rollback
+
+---
+
+## Step 2 — Docker Compose
+
+Create a complete local Docker Compose environment.
+
+Tasks:
+
+* [ ] Product service
+* [ ] PostgreSQL
+* [ ] Redis
+* [ ] Kafka
+* [ ] Network configuration
+* [ ] Environment variables
+* [ ] Health checks
+
+---
+
+## Step 3 — CI/CD
+
+Create GitHub Actions pipeline.
+
+Tasks:
+
+* [ ] Git checkout
+* [ ] Application validation
+* [ ] Docker build
+* [ ] Image tagging
+* [ ] Kubernetes deployment
+* [ ] Deployment verification
+
+---
+
+## Step 4 — Terraform
+
+Build AWS infrastructure using Terraform.
+
+Tasks:
+
+* [ ] AWS provider
+* [ ] VPC
+* [ ] Subnets
+* [ ] Route tables
+* [ ] Security groups
+* [ ] IAM
+* [ ] Compute infrastructure
+* [ ] Container registry
+* [ ] Kubernetes infrastructure
+
+---
+
+## Step 5 — AWS Deployment
+
+Deploy the application to AWS.
+
+Tasks:
+
+* [ ] Push Docker image to AWS container registry
+* [ ] Deploy application
+* [ ] Configure networking
+* [ ] Configure security
+* [ ] Configure DNS / access
+* [ ] Test application
+
+---
+
+## Step 6 — Monitoring
+
+Add monitoring and dashboards.
+
+Tasks:
+
+* [ ] Prometheus
+* [ ] Grafana
+* [ ] Application metrics
+* [ ] Kubernetes metrics
+* [ ] CPU monitoring
+* [ ] Memory monitoring
+* [ ] Pod restart monitoring
+* [ ] Basic alerts
+
+---
+
+# Final Target Architecture
+
+The final project should look approximately like this:
+
+```text
+                         GitHub
+                            │
+                            ▼
+                         GitHub Actions
+                            │
+                    Build & Test
+                            │
+                            ▼
+                       Docker Image
+                            │
+                            ▼
+                       AWS Registry
+                            │
+                            ▼
+                    AWS Kubernetes
+                            │
+          ┌─────────────────┼─────────────────┐
+          │                 │                 │
+          ▼                 ▼                 ▼
+      Frontend         Product Service     Other Services
+                            │
+              ┌─────────────┼─────────────┐
+              │             │             │
+              ▼             ▼             ▼
+          PostgreSQL      Redis          Kafka
+                                           │
+                                           ▼
+                                    Product Events
+                                          
+                            │
+                            ▼
+                    Prometheus / Grafana
+```
+
+---
+
+# Project Philosophy
+
+The application is intentionally simple.
+
+The purpose of the project is to understand the complete journey of an application:
+
+```text
+Write
+  ↓
+Test
+  ↓
+Package
+  ↓
+Containerize
+  ↓
+Deploy
+  ↓
+Automate
+  ↓
+Monitor
+  ↓
+Troubleshoot
+  ↓
+Scale
+```
+
+The final goal is not to build a complicated e-commerce product.
+
+The final goal is to gain practical experience in **deploying and operating an application using DevOps tools and cloud infrastructure**.
+
+---
+
+# Environment
+
+Current development environment:
+
+```text
+OS       : Ubuntu
+Python   : 3.12
+Kubernetes: Minikube
+Container Runtime: Docker
+Cloud Target: AWS
+```
+
+---
+
+# Project Status
+
+```text
+Application       ████████████████████  Complete
+PostgreSQL        ████████████████████  Complete
+Redis             ████████████████████  Complete
+Kafka             ████████████████████  Complete
+Docker            ████████████████████  Complete
+Kubernetes        ████████████████████  Complete
+Helm              ███████░░░░░░░░░░░░░  In Progress
+CI/CD             ░░░░░░░░░░░░░░░░░░░░  Planned
+Terraform         ░░░░░░░░░░░░░░░░░░░░  Planned
+AWS               ░░░░░░░░░░░░░░░░░░░░  Planned
+Monitoring        ░░░░░░░░░░░░░░░░░░░░  Planned
+```
+
+---
+
+### Author: Sumeet Patel
+
+
